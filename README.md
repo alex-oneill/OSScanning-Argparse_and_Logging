@@ -9,28 +9,28 @@ It should include a ‘help’ switch ‘-h’ which will provide all possible s
 It should also include a ‘mutually exclusive group’ for ‘-v’ (verbose) or ‘-q’ (quiet) mode.
 
 The additional allowed switches/arguments to the script (list_content.py) should be:
-	1) ‘-d’: To list all the drives of the machine with the following info:
-		- Drive name / letter
-		- Total number of directories
-		- Total number of files
-		- Total allocated, used, free storage
-		A positional argument ‘drv’ that will indicate the name of a single drive to report the above info.
-	2) ‘l’: To list all the folders in a given drive with the following info:
-		- Folder name
-		- Total number of files per folder
-		-	Total storage used per folder and sum of all storage for all folders.
-		A positional argument ‘fld’ that will pass the folder name to report the above info.
-	3) ‘-f’: To list all the files of the machine with the following info:
-		- File name
-		- File type (‘py’, ‘ipynb’, ‘exe’, ‘txt’, ‘csv’, ‘pdf’, ‘other’)
-		- File size
-		- Date/Time stamp of the file
-		A positional argument ‘fil’ that will pass the file name to report the above info.
-	4) ‘-t’: To list all the types of files exist in the machine with the following info:
-		- File type
-		- Total number of files per file type
-		- Total storage used per file type
-		A positional argument ‘typ’ that will indicate the type of file to report the above info.
+1) ‘-d’: To list all the drives of the machine with the following info:
+	- Drive name / letter
+	- Total number of directories
+	- Total number of files
+	- Total allocated, used, free storage
+	- A positional argument ‘drv’ that will indicate the name of a single drive to report the above info.
+2) ‘l’: To list all the folders in a given drive with the following info:
+	- Folder name
+	- Total number of files per folder
+	- Total storage used per folder and sum of all storage for all folders.
+	- A positional argument ‘fld’ that will pass the folder name to report the above info.
+3) ‘-f’: To list all the files of the machine with the following info:
+	- File name
+	- File type (‘py’, ‘ipynb’, ‘exe’, ‘txt’, ‘csv’, ‘pdf’, ‘other’)
+	- File size
+	- Date/Time stamp of the file
+	- A positional argument ‘fil’ that will pass the file name to report the above info.
+4) ‘-t’: To list all the types of files exist in the machine with the following info:
+	- File type
+	- Total number of files per file type
+	- Total storage used per file type
+	- A positional argument ‘typ’ that will indicate the type of file to report the above info.
 
 You should choose the various logging levels appropriately.
 - When listing info about folders and files the level should be INFO.
