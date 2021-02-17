@@ -1,5 +1,6 @@
 import argparse
 
+
 def fib(n):
     a, b = 0, 1 
     for i in range(n):
@@ -33,6 +34,7 @@ def Main():
     if args.output:
         f = open("fibonacci.txt", "a")
         f.write(str(result) + '\n')
-        
+       
+    
 if __name__ == "__main__":
     Main()
