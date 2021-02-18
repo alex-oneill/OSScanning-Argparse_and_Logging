@@ -11,14 +11,14 @@ def fib(n):
 def Main():
     parser = argparse.ArgumentParser()
     group = parser.add_mutually_exclusive_group()
-    group.add_argument("-v", "--verbose", action = "store_true")
-    group.add_argument("-q", "--quiet", action = "store_true")
+    group.add_argument("-v", "--verbose", action="store_true")
+    group.add_argument("-q", "--quiet", action="store_true")
     
     parser.add_argument("num", help = "This module calculates Fibonacci numbers " + \
-                        "based on the wall known formulat.", type = int)
+                        "based on the well known formula.", type=int)
     # parser.add_argument("-o", "--output", help = "Insert...", action = "store_true")
     parser.add_argument("-o", "--output", help = "Compute the Fib number and " + \
-                        "the result will be insert into a file.", action = "store_true")
+                        "the result will be insert into a file.", action="store_true")
     args = parser.parse_args()
     
     result = fib(args.num)
