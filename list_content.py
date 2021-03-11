@@ -35,32 +35,45 @@ def sizeConvert(size):  # change unit
     else:
         return str(size)+' Bytes'
 
-
-def list_drives(drive):
-    # todo how does this work for mac?
-    for each_drive in drive:
-        if os.path.exists(each_drive + ":\\"):
-            path = each_drive + ":\\"
-            print('-' * 50)
-            print('In Drive', path)
-            # logging.info('In Drive '.format(path))
-            usage = shutil.disk_usage(path)
-            print('Drives total size:', sizeConvert(usage.total))
-            print('Drives used size:', sizeConvert(usage.used))
-            print('Drives free size:', sizeConvert(usage.free))
-
-            dirnum = 0
-            filenum = 0
-
-            for lists in os.listdir(path):
-                sub_path = os.path.join(path, lists)
+def func_dir(path):
+    dirnum = 0
+    filenum = 0
+    for lists in os.listdir(path):
+        sub_path = os.path.join(path, lists)
                 # print(sub_path)
-                if os.path.isfile(sub_path):
-                    filenum = filenum + 1
-                elif os.path.isdir(sub_path):
-                    dirnum = dirnum + 1
-            print('The total number of directories is:', dirnum)
-            print('The total number of files is:', filenum)
+        if os.path.isfile(sub_path):
+            filenum = filenum + 1
+        elif os.path.isdir(sub_path):
+            dirnum = dirnum + 1
+    print('The total number of directories is:', dirnum)
+    print('The total number of files is:', filenum)
+Osys = os.name # OSYS = nt for windows and posix for unix
+if Osys == ("posix"):
+    for file in os.listdir("/Volumes"):
+        total, used, free = shutil.disk_usage("/Volumes/" + file)
+        print("Name of Drive: ",file)
+        used = total - free
+        print('Drives total size:', sizeConvert(total))
+        print('Drives used size:', sizeConvert(used))
+        print('Drives free size:', sizeConvert(free))
+        
+        func_dir(path)
+        
+else:
+    def list_drives(drive):
+    # todo how does this work for mac?
+        for each_drive in drive:
+            if os.path.exists(each_drive + ":\\"):
+                path = each_drive + ":\\"
+                print('-' * 50)
+                print('In Drive', path)
+                # logging.info('In Drive '.format(path))
+                usage = shutil.disk_usage(path)
+                print('Drives total size:', sizeConvert(usage.total))
+                print('Drives used size:', sizeConvert(usage.used))
+                print('Drives free size:', sizeConvert(usage.free))
+                
+                func_dir(path)
 
 
 def get_folder_info(DIR):
