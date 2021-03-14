@@ -81,6 +81,20 @@ def list_drives(drive=string.ascii_uppercase):
 			logging.info('The total number of files is: {}'.format(filenum))
 
 
+def list_drives_ml(path):
+        path1 = os.getcwd()
+        #print(path)
+        for file in os.listdir("/Volumes"):
+            total, used, free = shutil.disk_usage("/Volumes/" + file)
+            print('-' * 50)
+            print("Name of Drive: ",file)
+            used = total - free
+            print('Drives total size:', sizeConvert(total))
+            print('Drives used size:', sizeConvert(used))
+            print('Drives free size:', sizeConvert(free))
+            func_dir(path1)
+
+		
 def get_folder_info(DIR):
 	if os.path.exists(DIR):
 		total_size = sum(f.stat().st_size for f in Path(DIR).glob('**/*') if f.is_file())
@@ -310,6 +324,8 @@ def main():
 	                    nargs='?')
 	args = parser.parse_args()
 	
+	Osys = os.name # OSYS = nt for windows and posix for unix
+
 	if args.verbose:
 		print('in verbose mode')
 		console = logging.StreamHandler()
@@ -318,7 +334,10 @@ def main():
 		console.setFormatter(formatter)
 		logging.getLogger().addHandler(console)
 		if sys.argv[2] == '-d':
-			list_drives(sys.argv[3])
+			if Osys == ("posix"):
+				list_drives_ml(sys.argv[3])
+			else:
+				list_drives(sys.argv[3])
 		elif sys.argv[2] == '-l':
 			get_folder_info(sys.argv[3])
 		elif sys.argv[2] == '-f':
@@ -329,8 +348,10 @@ def main():
 		print('in quiet mode')
 		if sys.argv[2] == '-d':
 			print('in drv')
-			# print(args.drv)
-			list_drives(sys.argv[3])
+			if Osys == ("posix"):
+				list_drives_ml(sys.argv[3])
+			else:
+				list_drives(sys.argv[3])
 			print('job finished please check the file info.log')
 		elif sys.argv[2] == '-l':
 			get_folder_info(sys.argv[3])
