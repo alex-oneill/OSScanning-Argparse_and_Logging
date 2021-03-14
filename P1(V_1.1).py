@@ -39,60 +39,85 @@ def sizeConvert(size):  # change unit
 		return str(size) + ' Bytes'
 
 
+def list_drives_win(drive=string.ascii_uppercase):
+   drive = drive
+   for each_drive in drive:
+      if os.path.exists(each_drive + ":\\"):
+         path = each_drive + ":\\"
+         # print('-' * 50)
+         # print('In Drive', path)
+         usage = shutil.disk_usage(path)
+         # print('Drives total size:', sizeConvert(usage.total))
+         # print('Drives used size:', sizeConvert(usage.used))
+         # print('Drives free size:', sizeConvert(usage.free))
+         # print('counting files and directories now please wait.')
+         dirnum = 0
+         filenum = 0
+         logging.info('#' * 50)
+         logging.info('In Drive {}'.format(path))
+         logging.info('Drives total size: {}'.format(sizeConvert(usage.total)))
+         logging.info('Drives used size: {}'.format(sizeConvert(usage.used)))
+         logging.info('Drives free size: {}'.format(sizeConvert(usage.free)))
+         logging.debug('counting files and directories now please wait.')
+         # for root, dirs, files in os.walk(path):
+         #    try:
+         #       for file in files:
+         #          filepath = os.path.join(root, file)
+         #          if os.path.isfile(filepath):
+         #             filenum += 1
+         #       for dir in dirs:
+         #          dirpath = os.path.join(root, dir)
+         #          if os.path.isdir(dirpath):
+         #             dirnum += 1
+         #    except OSError as ose:
+         #       # print('Cannot access ' + path + '. Probably a permissions error ', ose)
+         #       logging.critical('Cannot access {} .Probably a permissions error {}'.format(path, ose))
+         #    except FileNotFoundError as fnf:
+         #       # print(path + ' not found ', fnf)
+         #       logging.warning('{} not found {}'.format(path, fnf))
+         print('The total number of directories is:', dirnum)
+         print('The total number of files is:', filenum)
+         logging.info('The total number of directories is: {}'.format(dirnum))
+         logging.info('The total number of files is: {}'.format(filenum))
+
+def list_drives_mac(drive='/Volumes/'):
+   drive = drive
+   usage = shutil.disk_usage(drive)
+   dirnum = 0
+   filenum = 0
+   logging.info('#' * 50)
+   logging.info('In Drive {}'.format(drive))
+   logging.info('Drives total size: {}'.format(sizeConvert(usage.total)))
+   logging.info('Drives used size: {}'.format(sizeConvert(usage.used)))
+   logging.info('Drives free size: {}'.format(sizeConvert(usage.free)))
+   logging.debug('counting files and directories now please wait.')
+   for root, dirs, files in os.walk(drive):
+      try:
+         for file in files:
+            filepath = os.path.join(root, file)
+            if os.path.isfile(filepath):
+               filenum += 1
+         for dir in dirs:
+            dirpath = os.path.join(root, dir)
+            if os.path.isdir(dirpath):
+               dirnum += 1
+      except OSError as ose:
+         # print('Cannot access ' + path + '. Probably a permissions error ', ose)
+         logging.critical('Cannot access {} .Probably a permissions error {}'.format(drive, ose))
+      except FileNotFoundError as fnf:
+         # print(path + ' not found ', fnf)
+         logging.warning('{} not found {}'.format(drive, fnf))
+   # print('The total number of directories is:', dirnum)
+   # print('The total number of files is:', filenum)
+   logging.info('The total number of directories is: {}'.format(dirnum))
+   logging.info('The total number of files is: {}'.format(filenum))
+
+
 def list_drives(drive=string.ascii_uppercase):
-	drive = drive
-	for each_drive in drive:
-		if os.path.exists(each_drive + ":\\"):
-			path = each_drive + ":\\"
-			# print('-' * 50)
-			# print('In Drive', path)
-			usage = shutil.disk_usage(path)
-			# print('Drives total size:', sizeConvert(usage.total))
-			# print('Drives used size:', sizeConvert(usage.used))
-			# print('Drives free size:', sizeConvert(usage.free))
-			# print('counting files and directories now please wait.')
-			dirnum = 0
-			filenum = 0
-			logging.info('#' * 50)
-			logging.info('In Drive {}'.format(path))
-			logging.info('Drives total size: {}'.format(sizeConvert(usage.total)))
-			logging.info('Drives used size: {}'.format(sizeConvert(usage.used)))
-			logging.info('Drives free size: {}'.format(sizeConvert(usage.free)))
-			logging.debug('counting files and directories now please wait.')
-			for root, dirs, files in os.walk(path):
-				try:
-					for file in files:
-						filepath = os.path.join(root, file)
-						if os.path.isfile(filepath):
-							filenum += 1
-					for dir in dirs:
-						dirpath = os.path.join(root, dir)
-						if os.path.isdir(dirpath):
-							dirnum += 1
-				except OSError as ose:
-					# print('Cannot access ' + path + '. Probably a permissions error ', ose)
-					logging.critical('Cannot access {} .Probably a permissions error {}'.format(path, ose))
-				except FileNotFoundError as fnf:
-					# print(path + ' not found ', fnf)
-					logging.warning('{} not found {}'.format(path, fnf))
-			# print('The total number of directories is:', dirnum)
-			# print('The total number of files is:', filenum)
-			logging.info('The total number of directories is: {}'.format(dirnum))
-			logging.info('The total number of files is: {}'.format(filenum))
-
-
-def list_drives_ml(path):
-        path1 = os.getcwd()
-        #print(path)
-        for file in os.listdir("/Volumes"):
-            total, used, free = shutil.disk_usage("/Volumes/" + file)
-            print('-' * 50)
-            print("Name of Drive: ",file)
-            used = total - free
-            print('Drives total size:', sizeConvert(total))
-            print('Drives used size:', sizeConvert(used))
-            print('Drives free size:', sizeConvert(free))
-            func_dir(path1)
+   if os.name == 'posix':
+      list_drives_mac(drive)
+   else:
+      list_drives_win(drive)
 
 		
 def get_folder_info(DIR):
@@ -333,17 +358,33 @@ def main():
 		formatter = logging.Formatter('%(asctime)s - %(levelname)s >>> %(message)s')
 		console.setFormatter(formatter)
 		logging.getLogger().addHandler(console)
-		if sys.argv[2] == '-d':
-			if Osys == ("posix"):
-				list_drives_ml(sys.argv[3])
-			else:
-				list_drives(sys.argv[3])
-		elif sys.argv[2] == '-l':
-			get_folder_info(sys.argv[3])
-		elif sys.argv[2] == '-f':
-			get_all_files(sys.argv[3])
+		# if sys.argv[2] == '-d':
+			# list_drives(sys.argv[3])
+		if args.drv:
+			list_drives(args.drv)
+		elif args.fld:
+			get_folder_info(args.fld)
+		# elif sys.argv[2] == '-l':
+		# 	get_folder_info(sys.argv[3])
+		elif args.fil:
+			get_all_files(args.fil)
+		# elif sys.argv[2] == '-f':
+		# 	get_all_files(sys.argv[3])
 		elif sys.argv[2] == '-t':
 			get_all_types(sys.argv[3])
+
+	# if args.verbose:
+	# 	print('in verbose')
+	# 	console = logging.StreamHandler()
+	# 	console.setLevel(logging.INFO)
+	# 	formatter = logging.Formatter('%(asctime)s - %(levelname)s >>> %(message)s')
+	# 	console.setFormatter(formatter)
+	# 	logging.getLogger().addHandler(console)
+	# 	list_drives(args.drv)
+	# 	get_folder_info(args.fld)
+	# 	get_all_files(args.fil)
+	# 	get_all_types(args.typ)
+
 	elif args.quiet:
 		print('in quiet mode')
 		if sys.argv[2] == '-d':
