@@ -66,23 +66,22 @@ def list_drives_win(drive=string.ascii_uppercase):
             logging.info('Drives used size: {}'.format(sizeConvert(usage.used)))
             logging.info('Drives free size: {}'.format(sizeConvert(usage.free)))
             logging.debug('counting files and directories now please wait.')
-            try:
-                for file in files:
-                    filepath = os.path.join(root, file)
-                    if os.path.isfile(filepath):
-                        filenum += 1
-                for dir in dirs:
-                    dirpath = os.path.join(root, dir)
-                    if os.path.isdir(dirpath):
-                        dirnum += 1
-            except FileNotFoundError as fnf:
-                # print(path + ' not found ', fnf)
-                logging.warning('{} not found {}'.format(path, fnf))
-            except OSError as ose:
-                # print('Cannot access ' + path + '. Probably a permissions error ', ose)
-                logging.critical('Cannot access {} .Probably a permissions error {}'.format(path, ose))
             for root, dirs, files in os.walk(path):
-                pass
+                try:
+                    for file in files:
+                        filepath = os.path.join(root, file)
+                        if os.path.isfile(filepath):
+                            filenum += 1
+                    for dir in dirs:
+                        dirpath = os.path.join(root, dir)
+                        if os.path.isdir(dirpath):
+                            dirnum += 1
+                except FileNotFoundError as fnf:
+                    # print(path + ' not found ', fnf)
+                    logging.warning('{} not found {}'.format(path, fnf))
+                except OSError as ose:
+                    # print('Cannot access ' + path + '. Probably a permissions error ', ose)
+                    logging.critical('Cannot access {} .Probably a permissions error {}'.format(path, ose))
             print('The total number of directories is:', dirnum)
             print('The total number of files is:', filenum)
             logging.info('The total number of directories is: {}'.format(dirnum))
