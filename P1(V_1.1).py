@@ -343,7 +343,7 @@ def main():
     me_group.add_argument('-q', '--quiet', action='store_true')
     parser.add_argument('-d', '--drv',
                         help='lists drive details for the drive letter that is entered, eg: -l C:',
-                        nargs='?', const=string.ascii_uppercase) # DEFAULT TO ALL DRIVES IF -d IS CALLED BUT NOT SPECIFIED
+                        nargs='?')
     parser.add_argument('-l', '--fld',
                         help='lists folder details for all folders in the path that is entered, eg: -l C:',
                         nargs='?')
@@ -379,7 +379,7 @@ def main():
         if not any([args.drv, args.fld, args.fil, args.typ]):
             print('No arguments entered -- please enter an argument')
         else:
-            if os.path.exists(args.drv[0].upper()):
+            if args.drv and os.path.exists(args.drv[0].upper()):
                 list_drives(args.drv)
                 print('Job completed in quiet mode, please check info.log for details')
             else:
