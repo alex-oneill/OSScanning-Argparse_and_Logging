@@ -49,15 +49,19 @@ def func_dir(path):
     print('The total number of files is:', filenum)
 Osys = os.name # OSYS = nt for windows and posix for unix
 if Osys == ("posix"):
-    for file in os.listdir("/Volumes"):
-        total, used, free = shutil.disk_usage("/Volumes/" + file)
-        print("Name of Drive: ",file)
-        used = total - free
-        print('Drives total size:', sizeConvert(total))
-        print('Drives used size:', sizeConvert(used))
-        print('Drives free size:', sizeConvert(free))
-        
-        func_dir(path)
+
+    def list_drives(path):
+        path1 = os.getcwd()
+        #print(path)
+        for file in os.listdir("/Volumes"):
+            total, used, free = shutil.disk_usage("/Volumes/" + file)
+            print('-' * 50)
+            print("Name of Drive: ",file)
+            used = total - free
+            print('Drives total size:', sizeConvert(total))
+            print('Drives used size:', sizeConvert(used))
+            print('Drives free size:', sizeConvert(free))
+            func_dir(path1)
         
 else:
     def list_drives(drive):
@@ -74,6 +78,7 @@ else:
                 print('Drives free size:', sizeConvert(usage.free))
                 
                 func_dir(path)
+
 
 
 def get_folder_info(DIR):
