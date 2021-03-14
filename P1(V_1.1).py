@@ -39,7 +39,7 @@ def sizeConvert(size):  # change unit
         return str(size) + ' Bytes'
 
 
-def list_drives(drive=string.ascii_uppercase):
+def list_drives(drive):
     if os.name == 'posix':
         list_drives_mac(drive)
     else:
@@ -82,8 +82,8 @@ def list_drives_win(drive=string.ascii_uppercase):
                 except OSError as ose:
                     # print('Cannot access ' + path + '. Probably a permissions error ', ose)
                     logging.critical('Cannot access {} .Probably a permissions error {}'.format(path, ose))
-            print('The total number of directories is:', dirnum)
-            print('The total number of files is:', filenum)
+            # print('The total number of directories is:', dirnum)
+            # print('The total number of files is:', filenum)
             logging.info('The total number of directories is: {}'.format(dirnum))
             logging.info('The total number of files is: {}'.format(filenum))
 
@@ -343,7 +343,7 @@ def main():
     me_group.add_argument('-q', '--quiet', action='store_true')
     parser.add_argument('-d', '--drv',
                         help='lists drive details for the drive letter that is entered, eg: -l C:',
-                        nargs='?')  # DEFAULT TO ALL DRIVES IF -d IS CALLED BUT NOT SPECIFIED
+                        nargs='?', const=string.ascii_uppercase) # DEFAULT TO ALL DRIVES IF -d IS CALLED BUT NOT SPECIFIED
     parser.add_argument('-l', '--fld',
                         help='lists folder details for all folders in the path that is entered, eg: -l C:',
                         nargs='?')
@@ -355,38 +355,43 @@ def main():
     args = parser.parse_args()
 
     if args.verbose:
-        print('in verbose mode')
-        console = logging.StreamHandler()
-        console.setLevel(logging.INFO)
-        formatter = logging.Formatter('%(asctime)s - %(levelname)s >>> %(message)s')
-        console.setFormatter(formatter)
-        logging.getLogger().addHandler(console)
+        if not any([args.drv, args.fld, args.fil, args.typ]):
+            print('No arguments entered -- please enter an argument')
+        else:
+            print('in verbose mode')
+            console = logging.StreamHandler()
+            console.setLevel(logging.DEBUG)
+            formatter = logging.Formatter('%(asctime)s - %(levelname)s >>> %(message)s')
+            console.setFormatter(formatter)
+            logging.getLogger().addHandler(console)
 
-        if args.drv:
-            list_drives(args.drv)
-        if args.fld:
-            get_folder_info(args.fld)
-        if args.fil:
-            get_all_files(args.fil)
-        if args.typ:
-            get_all_types(args.type)
+            if args.drv:
+                list_drives(args.drv)
+            if args.fld:
+                get_folder_info(args.fld)
+            if args.fil:
+                get_all_files(args.fil)
+            if args.typ:
+                get_all_types(args.type)
 
-    elif args.quiet:
-        print('in quiet mode')
-        if args.drv:
-            list_drives(args.drv)
-            print('job finished please check the file info.log')
-        if args.fld:
-            get_folder_info(args.fld)
-            print('job finished please check the file info.log')
-        if args.fil:
-            get_all_files(args.fil)
-            print('job finished please check the file info.log')
-        if args.typ:
-            get_all_types(args.type)
-            print('job finished please check the file info.log')
     else:
-        print('please use the right syntax')
+    # elif args.quiet:
+        if not any([args.drv, args.fld, args.fil, args.typ]):
+            print('No arguments entered -- please enter an argument')
+        else:
+            print('in quiet mode')
+            if args.drv:
+                list_drives(args.drv)
+                print('job finished please check the file info.log')
+            if args.fld:
+                get_folder_info(args.fld)
+                print('job finished please check the file info.log')
+            if args.fil:
+                get_all_files(args.fil)
+                print('job finished please check the file info.log')
+            if args.typ:
+                get_all_types(args.type)
+                print('job finished please check the file info.log')
 
 
 if __name__ == '__main__':
