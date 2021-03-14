@@ -383,7 +383,8 @@ def main():
                 list_drives(args.drv)
                 print('Job completed in quiet mode, please check info.log for details')
             else:
-                print('Please enter a valid drive!')
+                if args.drv:
+                     print('Please enter a valid drive!')
             if args.fld:
                 get_folder_info(args.fld)
                 print('Job completed in quiet mode, please check info.log for details')
