@@ -390,7 +390,7 @@ def main():
                 get_all_files(args.fil)
                 print('job finished please check the file info.log')
             if args.typ:
-                get_all_types(args.type)
+                get_all_types(args.typ)
                 print('job finished please check the file info.log')
 
 
