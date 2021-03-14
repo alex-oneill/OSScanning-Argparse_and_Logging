@@ -379,19 +379,20 @@ def main():
         if not any([args.drv, args.fld, args.fil, args.typ]):
             print('No arguments entered -- please enter an argument')
         else:
-            print('in quiet mode')
-            if args.drv:
+            if os.path.exists(args.drv[0].upper()):
                 list_drives(args.drv)
-                print('job finished please check the file info.log')
+                print('Job completed in quiet mode, please check info.log for details')
+            else:
+                print('Please enter a valid drive!')
             if args.fld:
                 get_folder_info(args.fld)
-                print('job finished please check the file info.log')
+                print('Job completed in quiet mode, please check info.log for details')
             if args.fil:
                 get_all_files(args.fil)
-                print('job finished please check the file info.log')
+                print('Job completed in quiet mode, please check info.log for details')
             if args.typ:
                 get_all_types(args.typ)
-                print('job finished please check the file info.log')
+                print('Job completed in quiet mode, please check info.log for details')
 
 
 if __name__ == '__main__':
