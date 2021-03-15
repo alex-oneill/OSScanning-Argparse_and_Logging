@@ -40,7 +40,6 @@ def sizeConvert(size):  # change unit
 
 def list_drives(drive):
     if os.name == 'posix':
-        #changed list_drives_mac(drive) to
         list_drives_mac()
     else:
         list_drives_win(drive)
@@ -51,13 +50,7 @@ def list_drives_win(drive=string.ascii_uppercase):
     for each_drive in drive:
         if os.path.exists(each_drive + ":\\"):
             path = each_drive + ":\\"
-            # print('-' * 50)
-            # print('In Drive', path)
             usage = shutil.disk_usage(path)
-            # print('Drives total size:', sizeConvert(usage.total))
-            # print('Drives used size:', sizeConvert(usage.used))
-            # print('Drives free size:', sizeConvert(usage.free))
-            # print('counting files and directories now please wait.')
             dirnum = 0
             filenum = 0
             logging.info('#' * 50)
@@ -77,15 +70,12 @@ def list_drives_win(drive=string.ascii_uppercase):
                         if os.path.isdir(dirpath):
                             dirnum += 1
                 except FileNotFoundError as fnf:
-                    # print(path + ' not found ', fnf)
                     logging.warning('{} not found {}'.format(path, fnf))
                 except OSError as ose:
-                    # print('Cannot access ' + path + '. Probably a permissions error ', ose)
                     logging.critical('Cannot access {} .Probably a permissions error {}'.format(path, ose))
-            # print('The total number of directories is:', dirnum)
-            # print('The total number of files is:', filenum)
             logging.info('The total number of directories is: {}'.format(dirnum))
             logging.info('The total number of files is: {}'.format(filenum))
+
 
 def list_drives_mac(drive="/Volumes"):
     drive = drive
@@ -110,13 +100,9 @@ def list_drives_mac(drive="/Volumes"):
                 if os.path.isdir(dirpath):
                     dirnum += 1
         except FileNotFoundError as fnf:
-            # print(path + ' not found ', fnf)
             logging.warning('{} not found {}'.format(drive, fnf))
         except OSError as ose:
-            # print('Cannot access ' + path + '. Probably a permissions error ', ose)
             logging.critical('Cannot access {} .Probably a permissions error {}'.format(drive, ose))
-    # print('The total number of directories is:', dirnum)
-    # print('The total number of files is:', filenum)
     logging.info('The total number of directories is: {}'.format(dirnum))
     logging.info('The total number of files is: {}'.format(filenum))
 
@@ -133,45 +119,34 @@ def get_folder_info(dir):
                     filenum = len(os.listdir(itempath))
                     root_directory = Path(itempath)
                     filesize = sum(f.stat().st_size for f in root_directory.glob('**/*') if f.is_file())
-                    # print('folder: {:20}, number of files: {:4}, folder size: {},'.format(itempath, filenum,
-                    #                                                                     sizeConvert(filesize)))
                     logging.info('folder: {:20}, number of files: {:4}, folder size: {},'.format(itempath, filenum,
                                                                                                  sizeConvert(filesize)))
             except FileNotFoundError as fnf:
-                # print(itempath + ' not found ', fnf)
                 logging.warning('{} not found {}'.format(itempath, fnf))
             except OSError as ose:
-                # print('Cannot access ' + itempath + '. Probably a permissions error ', ose)
                 logging.critical('Cannot access {} .Probably a permissions error {}'.format(itempath, ose))
         t_s_format = sizeConvert(total_size)
-        # print('Total Storage of all files: ', t_s_format)
         logging.info('Total Storage of all files: ' + t_s_format)
     else:
-        # print('Invalid path!')
         logging.warning('{} is not a valid path'.format(dir))
 
 
 def get_all_files(fil):
     if os.name == 'posix':
-        #changed list_drives_mac(drive) to
         get_all_files_mac(fil)
     else:
         get_all_files_win(fil)
 
 
 def get_all_files_mac(fil='all'):
-    # print('This will take a while please wait.')
     logging.debug('This will take a while please wait.')
     
     drive = "/Volumes/Macintosh HD"
     if fil == 'all':
         for each_drive in drive:
             if os.path.exists(drive + each_drive):
-                #print(each_drive)
-                #print(drive)
-                dir = drive + each_drive 
-                #+ ":\\"
-                #print(DIR)
+
+                dir = drive + each_drive
                 try:
                     for root, dirs, files in os.walk(dir):
                         for file in files:
@@ -182,53 +157,37 @@ def get_all_files_mac(fil='all'):
                                 filesize = sizeConvert(os.stat(filepath).st_size)
                                 filetime = time.strftime('%Y-%m-%d %H:%M:%S',
                                                          time.localtime(os.stat(filepath).st_ctime))
-                                # print('filename: {:30}, filetype: {:7} filesize: {:10}, time stamp: {}'.format(filename,
-                                #                                                                              filetype,
-                                #                                                                              filesize,
-                                #                                                                              filetime))
                                 logging.info(
                                     'filename: {:30}, filetype: {:7} filesize: {:10}, time stamp: {}'.format(filename,
                                                                                                              filetype,
                                                                                                              filesize,
                                                                                                              filetime))
                 except FileNotFoundError as fnf:
-                    # print(DIR + ' not found ', fnf)
                     logging.warning('{} not found {}'.format(dir, fnf))
                 except OSError as ose:
-                    # print('Cannot access ' + DIR + '. Probably a permissions error ', ose)
                     logging.critical('Cannot access {} .Probably a permissions error {}'.format(dir, ose))
 
     else:
         if os.path.exists(fil):
-            #using os.scandir to iterate to get files from specified directory
             obj = os.scandir(fil)
             for entry in obj:
                 head, tail = os.path.split(entry)
                 if entry.is_file():
-                    #print(entry.name)
                     filename = tail
                     filetype = os.path.splitext(tail)[1]
                     filesize = sizeConvert(os.stat(fil).st_size)
                     filetime = time.strftime('%Y-%m-%d %H:%M:%S',
                                              time.localtime(os.stat(fil).st_ctime))
-                # print('filename: {:30}, filetype: {:7} filesize: {:10}, time stamp: {}'.format(filename,
-                #                                                                              filetype,
-                #                                                                              filesize,
-                #                                                                              filetime))
                     logging.info(
                         'filename: {:30}, filetype: {:7} filesize: {:10}, time stamp: {}'.format(filename,
-                                                                                             filetype,
-                                                                                             filesize,
-                    
-            
-            #if os.path.isfile(fil):
-                                                                                         filetime))
+                                                                                                 filetype,
+                                                                                                 filesize,
+                                                                                                 filetime))
         else:
             logging.warning('{} is not a valid file path'.format(fil))
 
 
 def get_all_files_win(fil='all'):
-    # print('This will take a while please wait.')
     logging.debug('This will take a while please wait.')
     drive = string.ascii_uppercase
     if fil == 'all':
@@ -245,20 +204,14 @@ def get_all_files_win(fil='all'):
                                 filesize = sizeConvert(os.stat(filepath).st_size)
                                 filetime = time.strftime('%Y-%m-%d %H:%M:%S',
                                                          time.localtime(os.stat(filepath).st_ctime))
-                                # print('filename: {:30}, filetype: {:7} filesize: {:10}, time stamp: {}'.format(filename,
-                                #                                                                              filetype,
-                                #                                                                              filesize,
-                                #                                                                              filetime))
                                 logging.info(
                                     'filename: {:30}, filetype: {:7} filesize: {:10}, time stamp: {}'.format(filename,
                                                                                                              filetype,
                                                                                                              filesize,
                                                                                                              filetime))
                 except FileNotFoundError as fnf:
-                    # print(dir + ' not found ', fnf)
                     logging.warning('{} not found {}'.format(dir, fnf))
                 except OSError as ose:
-                    # print('Cannot access ' + dir + '. Probably a permissions error ', ose)
                     logging.critical('Cannot access {} .Probably a permissions error {}'.format(dir, ose))
 
     else:
@@ -270,10 +223,6 @@ def get_all_files_win(fil='all'):
                 filesize = sizeConvert(os.stat(fil).st_size)
                 filetime = time.strftime('%Y-%m-%d %H:%M:%S',
                                          time.localtime(os.stat(fil).st_ctime))
-                # print('filename: {:30}, filetype: {:7} filesize: {:10}, time stamp: {}'.format(filename,
-                #                                                                              filetype,
-                #                                                                              filesize,
-                #                                                                              filetime))
                 logging.info(
                     'filename: {:30}, filetype: {:7} filesize: {:10}, time stamp: {}'.format(filename,
                                                                                              filetype,
@@ -301,9 +250,7 @@ def everything_mac(typ):
     drive = "/Volumes/Macintosh HD/Users"
     for each_drive in drive:
         if os.path.exists(drive + each_drive):
-        #if os.path.exists(each_drive + ":\\"):
             path = drive + each_drive
-            #path = each_drive + ":\\"
             try:
                 for root, dirs, files in os.walk(path):
                     for file in files:
@@ -330,21 +277,11 @@ def everything_mac(typ):
                             other_file_num += 1
                             other_file_size += os.stat(filepath).st_size
             except FileNotFoundError as fnf:
-                # print(path + ' not found ', fnf)
                 logging.warning('{} not found {}'.format(path, fnf))
             except OSError as ose:
-                # print('Cannot access ' + path + '. Probably a permissions error ', ose)
                 logging.critical('Cannot access {} .Probably a permissions error {}'.format(path, ose))
 
     if typ == 'all':
-        # print('Number of type .py files is {:10d}, total size is {}'.format(py_file_num, sizeConvert(py_file_size)))
-        # print(
-        #   'Number of type .ipynb files is {:10d}, total size is {}'.format(ipynb_file_num, sizeConvert(ipynb_file_size)))
-        # print('Number of type .exe files is {:10d}, total size is {}'.format(exe_file_num, sizeConvert(exe_file_size)))
-        # print('Number of type .txt files is {:10d}, total size is {}'.format(txt_file_num, sizeConvert(txt_file_size)))
-        # print('Number of type .csv files is {:10d}, total size is {}'.format(csv_file_num, sizeConvert(csv_file_size)))
-        # print('Number of type .pdf files is {:10d}, total size is {}'.format(pdf_file_num, sizeConvert(pdf_file_size)))
-        # print('Number of other type files is {:10d}, total size is {}'.format(other_file_num, sizeConvert(other_file_size)))
         logging.info('This will take a while please wait.')
         logging.info(
             'Number of type .py files is {:10d}, total size is {}'.format(py_file_num, sizeConvert(py_file_size)))
@@ -435,21 +372,11 @@ def everything_win(typ):
                             other_file_num += 1
                             other_file_size += os.stat(filepath).st_size
             except FileNotFoundError as fnf:
-                # print(path + ' not found ', fnf)
                 logging.warning('{} not found {}'.format(path, fnf))
             except OSError as ose:
-                # print('Cannot access ' + path + '. Probably a permissions error ', ose)
                 logging.critical('Cannot access {} .Probably a permissions error {}'.format(path, ose))
     
     if typ == 'all':
-    # print('Number of type .py files is {:10d}, total size is {}'.format(py_file_num, sizeConvert(py_file_size)))
-    # print(
-    #   'Number of type .ipynb files is {:10d}, total size is {}'.format(ipynb_file_num, sizeConvert(ipynb_file_size)))
-    # print('Number of type .exe files is {:10d}, total size is {}'.format(exe_file_num, sizeConvert(exe_file_size)))
-    # print('Number of type .txt files is {:10d}, total size is {}'.format(txt_file_num, sizeConvert(txt_file_size)))
-    # print('Number of type .csv files is {:10d}, total size is {}'.format(csv_file_num, sizeConvert(csv_file_size)))
-    # print('Number of type .pdf files is {:10d}, total size is {}'.format(pdf_file_num, sizeConvert(pdf_file_size)))
-    # print('Number of other type files is {:10d}, total size is {}'.format(other_file_num, sizeConvert(other_file_size)))
         logging.info('This will take a while please wait.')
         logging.info(
             'Number of type .py files is {:10d}, total size is {}'.format(py_file_num, sizeConvert(py_file_size)))
@@ -512,7 +439,6 @@ logging.basicConfig(level=logging.DEBUG,
 def main():
     parser = argparse.ArgumentParser(
         add_help=False,
-        # prog='l_c',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description=textwrap.dedent('''\
                     Here is the description of this app
@@ -549,7 +475,6 @@ def main():
         if not any([args.drv, args.fld, args.fil, args.typ]):
             print('No arguments entered -- please enter an argument')
         else:
-            # print('in verbose mode')
             console = logging.StreamHandler()
             console.setLevel(logging.DEBUG)
             formatter = logging.Formatter('%(asctime)s - %(levelname)s >>> %(message)s')
@@ -572,7 +497,6 @@ def main():
             if args.fil:
                 get_all_files(args.fil)
             if args.typ:
-                #changed get_all_types(args.type)
                 get_all_types(args.typ)
 
     # DEFAULT MODE OR QUIET MODE
