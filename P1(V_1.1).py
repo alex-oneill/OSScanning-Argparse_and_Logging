@@ -207,7 +207,7 @@ def get_all_files(fil='all'):
             logging.warning('{} is not a valid file path'.format(fil))
 
 
-def get_all_types(typ='all'):
+def get_all_types(typ):
     py_file_num = 0
     py_file_size = 0
     ipynb_file_num = 0
@@ -223,6 +223,7 @@ def get_all_types(typ='all'):
     other_file_num = 0
     other_file_size = 0
     drive = string.ascii_uppercase
+    logging.debug('Finding files. This may take a while...')
     for each_drive in drive:
         if os.path.exists(each_drive + ":\\"):
             path = each_drive + ":\\"
@@ -268,7 +269,7 @@ def get_all_types(typ='all'):
         # print('Number of type .csv files is {:10d}, total size is {}'.format(csv_file_num, sizeConvert(csv_file_size)))
         # print('Number of type .pdf files is {:10d}, total size is {}'.format(pdf_file_num, sizeConvert(pdf_file_size)))
         # print('Number of other type files is {:10d}, total size is {}'.format(other_file_num, sizeConvert(other_file_size)))
-        logging.info('This will take a while please wait.')
+        logging.info('Finding all types of files. This will take a while please wait.')
         logging.info(
             'Number of type .py files is {:10d}, total size is {}'.format(py_file_num, sizeConvert(py_file_size)))
         logging.info(
@@ -351,7 +352,7 @@ def main():
                         help='lists file details for all files in the path that is entered, eg: -f C:\\path\\file',
                         nargs='?')
     parser.add_argument('-t', '--typ', help='lists file type details for the "file type" that is entered, eg: -t exe',
-                        nargs='?')
+                        nargs='?', const='all')
     args = parser.parse_args()
 
     # VERBOSE MODE
