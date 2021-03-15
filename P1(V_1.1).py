@@ -279,6 +279,7 @@ def get_all_files_win(fil='all'):
         else:
             logging.warning('{} is not a valid file path'.format(fil))
 
+
 def everything_mac(typ):
     py_file_num = 0
     py_file_size = 0
@@ -325,12 +326,13 @@ def everything_mac(typ):
                         else:
                             other_file_num += 1
                             other_file_size += os.stat(filepath).st_size
-            except OSError as ose:
-                # print('Cannot access ' + path + '. Probably a permissions error ', ose)
-                logging.critical('Cannot access {} .Probably a permissions error {}'.format(path, ose))
             except FileNotFoundError as fnf:
                 # print(path + ' not found ', fnf)
                 logging.warning('{} not found {}'.format(path, fnf))
+            except OSError as ose:
+                # print('Cannot access ' + path + '. Probably a permissions error ', ose)
+                logging.critical('Cannot access {} .Probably a permissions error {}'.format(path, ose))
+
     if typ == 'all':
         # print('Number of type .py files is {:10d}, total size is {}'.format(py_file_num, sizeConvert(py_file_size)))
         # print(
@@ -399,6 +401,7 @@ def everything_win(typ):
     pdf_file_size = 0
     other_file_num = 0
     other_file_size = 0
+    logging.info('This will take a while please wait.')
     drive = string.ascii_uppercase
     for each_drive in drive:
         if os.path.exists(each_drive + ":\\"):
@@ -435,66 +438,67 @@ def everything_win(typ):
                 # print('Cannot access ' + path + '. Probably a permissions error ', ose)
                 logging.critical('Cannot access {} .Probably a permissions error {}'.format(path, ose))
     
-        if typ == 'all':
-        # print('Number of type .py files is {:10d}, total size is {}'.format(py_file_num, sizeConvert(py_file_size)))
-        # print(
-        #   'Number of type .ipynb files is {:10d}, total size is {}'.format(ipynb_file_num, sizeConvert(ipynb_file_size)))
-        # print('Number of type .exe files is {:10d}, total size is {}'.format(exe_file_num, sizeConvert(exe_file_size)))
-        # print('Number of type .txt files is {:10d}, total size is {}'.format(txt_file_num, sizeConvert(txt_file_size)))
-        # print('Number of type .csv files is {:10d}, total size is {}'.format(csv_file_num, sizeConvert(csv_file_size)))
-        # print('Number of type .pdf files is {:10d}, total size is {}'.format(pdf_file_num, sizeConvert(pdf_file_size)))
-        # print('Number of other type files is {:10d}, total size is {}'.format(other_file_num, sizeConvert(other_file_size)))
-            logging.info('This will take a while please wait.')
-            logging.info(
-                'Number of type .py files is {:10d}, total size is {}'.format(py_file_num, sizeConvert(py_file_size)))
-            logging.info(
-                'Number of type .ipynb files is {:10d}, total size is {}'.format(ipynb_file_num,
-                                                                                 sizeConvert(ipynb_file_size)))
-            logging.info(
-                'Number of type .exe files is {:10d}, total size is {}'.format(exe_file_num, sizeConvert(exe_file_size)))
-            logging.info(
-                'Number of type .txt files is {:10d}, total size is {}'.format(txt_file_num, sizeConvert(txt_file_size)))
-            logging.info(
-                'Number of type .csv files is {:10d}, total size is {}'.format(csv_file_num, sizeConvert(csv_file_size)))
-            logging.info(
-                'Number of type .pdf files is {:10d}, total size is {}'.format(pdf_file_num, sizeConvert(pdf_file_size)))
-            logging.info(
-                'Number of other type files is {:10d}, total size is {}'.format(other_file_num,
-                                                                               sizeConvert(other_file_size)))
-        elif typ == 'py':
-            logging.info(
-                'Number of type .py files is {:10d}, total size is {}'.format(py_file_num, sizeConvert(py_file_size)))
-        elif typ == 'ipynb':
-            logging.info(
-                'Number of type .ipynb files is {:10d}, total size is {}'.format(ipynb_file_num,
-                                                                                 sizeConvert(ipynb_file_size)))
-        elif typ == 'exe':
-            logging.info(
-                'Number of type .exe files is {:10d}, total size is {}'.format(exe_file_num, sizeConvert(exe_file_size)))
-        elif typ == 'txt':
-            logging.info(
-                'Number of type .txt files is {:10d}, total size is {}'.format(txt_file_num, sizeConvert(txt_file_size)))
-        elif typ == 'csv':
-            logging.info(
-                'Number of type .csv files is {:10d}, total size is {}'.format(csv_file_num, sizeConvert(csv_file_size)))
-        elif typ == 'pdf':
-            logging.info(
-                'Number of type .pdf files is {:10d}, total size is {}'.format(pdf_file_num, sizeConvert(pdf_file_size)))
-        elif typ == 'other':
-            logging.info(
-                'Number of other type files is {:10d}, total size is {}'.format(other_file_num,
-                                                                                sizeConvert(other_file_size)))
-        else:
-            logging.warning('unable to recognize this format')
+    if typ == 'all':
+    # print('Number of type .py files is {:10d}, total size is {}'.format(py_file_num, sizeConvert(py_file_size)))
+    # print(
+    #   'Number of type .ipynb files is {:10d}, total size is {}'.format(ipynb_file_num, sizeConvert(ipynb_file_size)))
+    # print('Number of type .exe files is {:10d}, total size is {}'.format(exe_file_num, sizeConvert(exe_file_size)))
+    # print('Number of type .txt files is {:10d}, total size is {}'.format(txt_file_num, sizeConvert(txt_file_size)))
+    # print('Number of type .csv files is {:10d}, total size is {}'.format(csv_file_num, sizeConvert(csv_file_size)))
+    # print('Number of type .pdf files is {:10d}, total size is {}'.format(pdf_file_num, sizeConvert(pdf_file_size)))
+    # print('Number of other type files is {:10d}, total size is {}'.format(other_file_num, sizeConvert(other_file_size)))
+        logging.info('This will take a while please wait.')
+        logging.info(
+            'Number of type .py files is {:10d}, total size is {}'.format(py_file_num, sizeConvert(py_file_size)))
+        logging.info(
+            'Number of type .ipynb files is {:10d}, total size is {}'.format(ipynb_file_num,
+                                                                             sizeConvert(ipynb_file_size)))
+        logging.info(
+            'Number of type .exe files is {:10d}, total size is {}'.format(exe_file_num, sizeConvert(exe_file_size)))
+        logging.info(
+            'Number of type .txt files is {:10d}, total size is {}'.format(txt_file_num, sizeConvert(txt_file_size)))
+        logging.info(
+            'Number of type .csv files is {:10d}, total size is {}'.format(csv_file_num, sizeConvert(csv_file_size)))
+        logging.info(
+            'Number of type .pdf files is {:10d}, total size is {}'.format(pdf_file_num, sizeConvert(pdf_file_size)))
+        logging.info(
+            'Number of other type files is {:10d}, total size is {}'.format(other_file_num,
+                                                                           sizeConvert(other_file_size)))
+    elif typ == 'py':
+        logging.info(
+            'Number of type .py files is {:10d}, total size is {}'.format(py_file_num, sizeConvert(py_file_size)))
+    elif typ == 'ipynb':
+        logging.info(
+            'Number of type .ipynb files is {:10d}, total size is {}'.format(ipynb_file_num,
+                                                                             sizeConvert(ipynb_file_size)))
+    elif typ == 'exe':
+        logging.info(
+            'Number of type .exe files is {:10d}, total size is {}'.format(exe_file_num, sizeConvert(exe_file_size)))
+    elif typ == 'txt':
+        logging.info(
+            'Number of type .txt files is {:10d}, total size is {}'.format(txt_file_num, sizeConvert(txt_file_size)))
+    elif typ == 'csv':
+        logging.info(
+            'Number of type .csv files is {:10d}, total size is {}'.format(csv_file_num, sizeConvert(csv_file_size)))
+    elif typ == 'pdf':
+        logging.info(
+            'Number of type .pdf files is {:10d}, total size is {}'.format(pdf_file_num, sizeConvert(pdf_file_size)))
+    elif typ == 'other':
+        logging.info(
+            'Number of other type files is {:10d}, total size is {}'.format(other_file_num,
+                                                                            sizeConvert(other_file_size)))
+    else:
+        logging.warning('unable to recognize this format')
 
 
-def get_all_types(typ='all'):
+def get_all_types(typ):
 
     if os.name == 'posix':
         everything_mac(typ)
     else:
         everything_win(typ)
-    
+
+
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(levelname)s >>> %(message)s',
                     datefmt='%m-%d %H:%M',
@@ -534,7 +538,7 @@ def main():
                         help='lists file details for all files in the path that is entered, eg: -f C:\\path\\file',
                         nargs='?')
     parser.add_argument('-t', '--typ', help='lists file type details for the "file type" that is entered, eg: -t exe',
-                        nargs='?')
+                        nargs='?', const='all')
     args = parser.parse_args()
 
     # VERBOSE MODE
