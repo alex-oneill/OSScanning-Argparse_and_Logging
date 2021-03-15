@@ -18,7 +18,6 @@ import string
 import time
 import argparse
 import logging
-import sys
 import textwrap
 from pathlib import Path
 
@@ -138,14 +137,13 @@ def get_all_files(fil):
         get_all_files_win(fil)
 
 
-def get_all_files_mac(fil='all'):
+def get_all_files_mac(fil):
     logging.debug('This will take a while please wait.')
     
     drive = "/Volumes/Macintosh HD"
     if fil == 'all':
         for each_drive in drive:
             if os.path.exists(drive + each_drive):
-
                 dir = drive + each_drive
                 try:
                     for root, dirs, files in os.walk(dir):
@@ -168,26 +166,32 @@ def get_all_files_mac(fil='all'):
                     logging.critical('Cannot access {} .Probably a permissions error {}'.format(dir, ose))
 
     else:
-        if os.path.exists(fil):
-            obj = os.scandir(fil)
-            for entry in obj:
-                head, tail = os.path.split(entry)
-                if entry.is_file():
-                    filename = tail
-                    filetype = os.path.splitext(tail)[1]
-                    filesize = sizeConvert(os.stat(fil).st_size)
-                    filetime = time.strftime('%Y-%m-%d %H:%M:%S',
-                                             time.localtime(os.stat(fil).st_ctime))
-                    logging.info(
-                        'filename: {:30}, filetype: {:7} filesize: {:10}, time stamp: {}'.format(filename,
-                                                                                                 filetype,
-                                                                                                 filesize,
-                                                                                                 filetime))
-        else:
-            logging.warning('{} is not a valid file path'.format(fil))
+        found_file = False
+        for each_drive in drive:
+            if os.path.exists(drive + each_drive):
+                dir = drive + each_drive
+                for root, dirs, files in os.walk(dir):
+                    for file in files:
+                        filepath = os.path.join(root, file)
+                        if os.path.isfile(filepath):
+                            filename = file
+                            filetype = os.path.splitext(file)[1]
+                            filesize = sizeConvert(os.stat(filepath).st_size)
+                            filetime = time.strftime('%Y-%m-%d %H:%M:%S',
+                                                     time.localtime(os.stat(fil).st_ctime))
+                            if filename.lower() == fil.lower():
+                                found_file = True
+                                logging.info('File found at path: {}'.format(filepath))
+                                logging.info(
+                                    'filename: {:30}, filetype: {:7} filesize: {:10}, time stamp: {}'.format(filename,
+                                                                                                             filetype,
+                                                                                                             filesize,
+                                                                                                             filetime))
+        if not found_file:
+            logging.warning('Unable to find file: {}'.format(fil))
 
 
-def get_all_files_win(fil='all'):
+def get_all_files_win(fil):
     logging.debug('This will take a while please wait.')
     drive = string.ascii_uppercase
     if fil == 'all':
@@ -215,21 +219,37 @@ def get_all_files_win(fil='all'):
                     logging.critical('Cannot access {} .Probably a permissions error {}'.format(dir, ose))
 
     else:
-        if os.path.exists(fil):
-            head, tail = os.path.split(fil)
-            if os.path.isfile(fil):
-                filename = tail
-                filetype = os.path.splitext(tail)[1]
-                filesize = sizeConvert(os.stat(fil).st_size)
-                filetime = time.strftime('%Y-%m-%d %H:%M:%S',
-                                         time.localtime(os.stat(fil).st_ctime))
-                logging.info(
-                    'filename: {:30}, filetype: {:7} filesize: {:10}, time stamp: {}'.format(filename,
-                                                                                             filetype,
-                                                                                             filesize,
-                                                                                             filetime))
-        else:
-            logging.warning('{} is not a valid file path'.format(fil))
+        found_file = False
+        for each_drive in drive:
+            if os.path.exists(each_drive + ":\\"):
+                dir = each_drive + ":\\"
+                for root, dirs, files in os.walk(dir):
+                    for file in files:
+                        filepath = os.path.join(root, file)
+                        if os.path.isfile(filepath):
+                            filename = file
+                            filetype = os.path.splitext(file)[1]
+                            filesize = sizeConvert(os.stat(filepath).st_size)
+                            filetime = time.strftime('%Y-%m-%d %H:%M:%S',
+                                                     time.localtime(os.stat(filepath).st_ctime))
+                            if filename.lower() == fil.lower():
+                                found_file = True
+                                logging.info('File found at path: {}'.format(filepath))
+                                logging.info(
+                                    'filename: {:30}, filetype: {:7} filesize: {:10}, time stamp: {}'.format(filename,
+                                                                                                             filetype,
+                                                                                                             filesize,
+                                                                                                             filetime))
+        if not found_file:
+            logging.warning('Unable to find file: {}'.format(fil))
+
+
+def get_all_types(typ):
+
+    if os.name == 'posix':
+        everything_mac(typ)
+    else:
+        everything_win(typ)
 
 
 def everything_mac(typ):
@@ -421,14 +441,6 @@ def everything_win(typ):
         logging.warning('unable to recognize this format')
 
 
-def get_all_types(typ):
-
-    if os.name == 'posix':
-        everything_mac(typ)
-    else:
-        everything_win(typ)
-
-
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(levelname)s >>> %(message)s',
                     datefmt='%m-%d %H:%M',
@@ -465,7 +477,7 @@ def main():
                         nargs='?')
     parser.add_argument('-f', '--fil',
                         help='lists file details for all files in the path that is entered, eg: -f C:\\path\\file',
-                        nargs='?')
+                        nargs='?', const='all')
     parser.add_argument('-t', '--typ', help='lists file type details for the "file type" that is entered, eg: -t exe',
                         nargs='?', const='all')
     args = parser.parse_args()
@@ -494,10 +506,13 @@ def main():
                     exit()
             if args.fld:
                 get_folder_info(args.fld)
+                print('Job completed in verbose mode, please check info.log for details')
             if args.fil:
                 get_all_files(args.fil)
+                print('Job completed in verbose mode, please check info.log for details')
             if args.typ:
                 get_all_types(args.typ)
+                print('Job completed in verbose mode, please check info.log for details')
 
     # DEFAULT MODE OR QUIET MODE
     else:
