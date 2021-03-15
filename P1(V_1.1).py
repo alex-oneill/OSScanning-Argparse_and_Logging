@@ -222,8 +222,16 @@ def get_all_types(typ):
     pdf_file_size = 0
     other_file_num = 0
     other_file_size = 0
-    drive = string.ascii_uppercase
     logging.debug('Finding files. This may take a while...')
+
+#
+# todo Saahiil -- can you check this portion with Mac?
+#
+    if os.name == 'posix':
+        drive = '/Volumes/'
+    else:
+        drive = string.ascii_uppercase
+
     for each_drive in drive:
         if os.path.exists(each_drive + ":\\"):
             path = each_drive + ":\\"
