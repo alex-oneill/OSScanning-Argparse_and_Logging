@@ -343,7 +343,7 @@ def main():
     me_group.add_argument('-q', '--quiet', action='store_true')
     parser.add_argument('-d', '--drv',
                         help='lists drive details for the drive letter that is entered, eg: -l C:',
-                        nargs='?', const=string.ascii_uppercase) # DEFAULT TO ALL DRIVES IF -d IS CALLED BUT NOT SPECIFIED
+                        nargs='?', const=string.ascii_uppercase)
     parser.add_argument('-l', '--fld',
                         help='lists folder details for all folders in the path that is entered, eg: -l C:',
                         nargs='?')
@@ -369,10 +369,10 @@ def main():
                 temppath = args.drv[0].upper()+":"
                 if args.drv == 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
                     list_drives(args.drv)
-                    print('Job completed in quiet mode, please check info.log for details')
+                    print('Job completed in verbose mode, please check info.log for details')
                 elif os.path.exists(temppath):
                     list_drives(args.drv[0].upper())
-                    print('Job completed in quiet mode, please check info.log for details')
+                    print('Job completed in verbose mode, please check info.log for details')
                 else:
                     print('Please enter a valid drive!')
                     exit()
