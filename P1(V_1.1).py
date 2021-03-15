@@ -354,11 +354,12 @@ def main():
                         nargs='?')
     args = parser.parse_args()
 
+    # VERBOSE MODE
     if args.verbose:
         if not any([args.drv, args.fld, args.fil, args.typ]):
             print('No arguments entered -- please enter an argument')
         else:
-            print('in verbose mode')
+            # print('in verbose mode')
             console = logging.StreamHandler()
             console.setLevel(logging.DEBUG)
             formatter = logging.Formatter('%(asctime)s - %(levelname)s >>> %(message)s')
@@ -383,30 +384,32 @@ def main():
             if args.typ:
                 get_all_types(args.type)
 
-    elif not any([args.drv, args.fld, args.fil, args.typ]):
+    # DEFAULT MODE OR QUIET MODE
+    else:
+        if not any([args.drv, args.fld, args.fil, args.typ]):
             print('No arguments entered -- please enter an argument')
 
-    if args.drv:
-        temppath = args.drv[0].upper()+":"
-        if args.drv == 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
-            list_drives(args.drv)
+        if args.drv:
+            temppath = args.drv[0].upper() + ":"
+            if args.drv == 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
+                list_drives(args.drv)
+                print('Job completed in quiet mode, please check info.log for details')
+            elif os.path.exists(temppath):
+                list_drives(args.drv[0].upper())
+                print('Job completed in quiet mode, please check info.log for details')
+            else:
+                print('Please enter a valid drive!')
+                exit()
+        if args.fld:
+            get_folder_info(args.fld)
             print('Job completed in quiet mode, please check info.log for details')
-        elif os.path.exists(temppath):
-            list_drives(args.drv[0].upper())
+        if args.fil:
+            get_all_files(args.fil)
             print('Job completed in quiet mode, please check info.log for details')
-        else:
-            print('Please enter a valid drive!')
-            exit()
-            
-    if args.fld:
-        get_folder_info(args.fld)
-        print('Job completed in quiet mode, please check info.log for details')
-    if args.fil:
-        get_all_files(args.fil)
-        print('Job completed in quiet mode, please check info.log for details')
-    if args.typ:
-        get_all_types(args.typ)
-        print('Job completed in quiet mode, please check info.log for details')
-        
+        if args.typ:
+            get_all_types(args.typ)
+            print('Job completed in quiet mode, please check info.log for details')
+
+
 if __name__ == '__main__':
     main()
