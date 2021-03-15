@@ -343,7 +343,7 @@ def main():
     me_group.add_argument('-q', '--quiet', action='store_true')
     parser.add_argument('-d', '--drv',
                         help='lists drive details for the drive letter that is entered, eg: -l C:',
-                        nargs='?')
+                        nargs='?', const=string.ascii_uppercase) # DEFAULT TO ALL DRIVES IF -d IS CALLED BUT NOT SPECIFIED
     parser.add_argument('-l', '--fld',
                         help='lists folder details for all folders in the path that is entered, eg: -l C:',
                         nargs='?')
@@ -366,7 +366,16 @@ def main():
             logging.getLogger().addHandler(console)
 
             if args.drv:
-                list_drives(args.drv)
+                temppath = args.drv[0].upper()+":"
+                if args.drv == 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
+                    list_drives(args.drv)
+                    print('Job completed in quiet mode, please check info.log for details')
+                elif os.path.exists(temppath):
+                    list_drives(args.drv[0].upper())
+                    print('Job completed in quiet mode, please check info.log for details')
+                else:
+                    print('Please enter a valid drive!')
+                    exit()
             if args.fld:
                 get_folder_info(args.fld)
             if args.fil:
@@ -374,26 +383,30 @@ def main():
             if args.typ:
                 get_all_types(args.type)
 
-    else:
-    # elif args.quiet:
-        if not any([args.drv, args.fld, args.fil, args.typ]):
+    elif not any([args.drv, args.fld, args.fil, args.typ]):
             print('No arguments entered -- please enter an argument')
+
+    if args.drv:
+        temppath = args.drv[0].upper()+":"
+        if args.drv == 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
+            list_drives(args.drv)
+            print('Job completed in quiet mode, please check info.log for details')
+        elif os.path.exists(temppath):
+            list_drives(args.drv[0].upper())
+            print('Job completed in quiet mode, please check info.log for details')
         else:
-            if args.drv and os.path.exists(args.drv[0].upper()):
-                list_drives(args.drv)
-                print('Job completed in quiet mode, please check info.log for details')
-            else:
-                print('Please enter a valid drive!')
-            if args.fld:
-                get_folder_info(args.fld)
-                print('Job completed in quiet mode, please check info.log for details')
-            if args.fil:
-                get_all_files(args.fil)
-                print('Job completed in quiet mode, please check info.log for details')
-            if args.typ:
-                get_all_types(args.typ)
-                print('Job completed in quiet mode, please check info.log for details')
-
-
+            print('Please enter a valid drive!')
+            exit()
+            
+    if args.fld:
+        get_folder_info(args.fld)
+        print('Job completed in quiet mode, please check info.log for details')
+    if args.fil:
+        get_all_files(args.fil)
+        print('Job completed in quiet mode, please check info.log for details')
+    if args.typ:
+        get_all_types(args.typ)
+        print('Job completed in quiet mode, please check info.log for details')
+        
 if __name__ == '__main__':
     main()
