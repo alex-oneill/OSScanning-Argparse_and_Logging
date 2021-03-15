@@ -397,6 +397,7 @@ def main():
         else:
             print('Please enter a valid drive!')
             exit()
+            
     if args.fld:
         get_folder_info(args.fld)
         print('Job completed in quiet mode, please check info.log for details')
@@ -406,7 +407,6 @@ def main():
     if args.typ:
         get_all_types(args.typ)
         print('Job completed in quiet mode, please check info.log for details')
-
-
+        
 if __name__ == '__main__':
     main()
