@@ -150,12 +150,14 @@ def get_folder_info(dir):
         # print('Invalid path!')
         logging.warning('{} is not a valid path'.format(dir))
 
+
 def get_all_files(fil):
     if os.name == 'posix':
         #changed list_drives_mac(drive) to
         get_all_files_mac(fil)
     else:
         get_all_files_win(fil)
+
 
 def get_all_files_mac(fil='all'):
     # print('This will take a while please wait.')
@@ -189,12 +191,13 @@ def get_all_files_mac(fil='all'):
                                                                                                              filetype,
                                                                                                              filesize,
                                                                                                              filetime))
-                except OSError as ose:
-                    # print('Cannot access ' + DIR + '. Probably a permissions error ', ose)
-                    logging.critical('Cannot access {} .Probably a permissions error {}'.format(DIR, ose))
                 except FileNotFoundError as fnf:
                     # print(DIR + ' not found ', fnf)
-                    logging.warning('{} not found {}'.format(DIR, fnf))
+                    logging.warning('{} not found {}'.format(dir, fnf))
+                except OSError as ose:
+                    # print('Cannot access ' + DIR + '. Probably a permissions error ', ose)
+                    logging.critical('Cannot access {} .Probably a permissions error {}'.format(dir, ose))
+
     else:
         if os.path.exists(fil):
             #using os.scandir to iterate to get files from specified directory
