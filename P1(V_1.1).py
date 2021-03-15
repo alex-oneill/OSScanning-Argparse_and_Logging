@@ -382,7 +382,7 @@ def main():
             if args.fil:
                 get_all_files(args.fil)
             if args.typ:
-                get_all_types(args.type)
+                get_all_types(args.typ)
 
     # DEFAULT MODE OR QUIET MODE
     else:
