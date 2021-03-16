@@ -13,6 +13,7 @@ NOTE: finished project with requirements
 
 """
 import os
+import pathlib
 import shutil
 import string
 import time
@@ -22,7 +23,7 @@ import textwrap
 from pathlib import Path
 
 
-def sizeConvert(size):  # change unit
+def sizeConvert(size):
     K, M, G = 1024, 1024 ** 2, 1024 ** 3
     if size >= G:
         size = format(size / G, '.2f')
@@ -45,6 +46,8 @@ def list_drives(drive):
 
 
 def list_drives_win(drive=string.ascii_uppercase):
+    logging.info('#' * 50)
+    logging.info('-drv: This will take a while please wait.')
     drive = drive
     for each_drive in drive:
         if os.path.exists(each_drive + ":\\"):
@@ -53,7 +56,6 @@ def list_drives_win(drive=string.ascii_uppercase):
             dirnum = 0
             filenum = 0
             logging.info('#' * 50)
-            logging.info('In Drive {}'.format(path))
             logging.info('Drives total size: {}'.format(sizeConvert(usage.total)))
             logging.info('Drives used size: {}'.format(sizeConvert(usage.used)))
             logging.info('Drives free size: {}'.format(sizeConvert(usage.free)))
@@ -77,11 +79,12 @@ def list_drives_win(drive=string.ascii_uppercase):
 
 
 def list_drives_mac(drive="/Volumes"):
+    logging.info('#' * 50)
+    logging.info('-fld')
     drive = drive
     usage = shutil.disk_usage(drive)
     dirnum = 0
     filenum = 0
-    logging.info('#' * 50)
     logging.info('In Drive {}'.format(drive))
     logging.info('Drives total size: {}'.format(sizeConvert(usage.total)))
     logging.info('Drives used size: {}'.format(sizeConvert(usage.used)))
@@ -107,6 +110,8 @@ def list_drives_mac(drive="/Volumes"):
 
 
 def get_folder_info(dir):
+    logging.info('#' * 50)
+    logging.info('-fld')
     if os.path.exists(dir):
         total_size = sum(f.stat().st_size for f in Path(dir).glob('**/*') if f.is_file())
         for item in os.listdir(dir):
@@ -138,7 +143,8 @@ def get_all_files(fil):
 
 
 def get_all_files_mac(fil):
-    logging.debug('This will take a while please wait.')
+    logging.info('#' * 50)
+    logging.debug('-fil: This will take a while please wait.')
     
     drive = "/Volumes/Macintosh HD"
     if fil == 'all':
@@ -192,7 +198,8 @@ def get_all_files_mac(fil):
 
 
 def get_all_files_win(fil):
-    logging.debug('This will take a while please wait.')
+    logging.info('#' * 50)
+    logging.debug('-fil: This will take a while please wait.')
     drive = string.ascii_uppercase
     if fil == 'all':
         for each_drive in drive:
@@ -253,192 +260,77 @@ def get_all_types(typ):
 
 
 def everything_mac(typ):
-    py_file_num = 0
-    py_file_size = 0
-    ipynb_file_num = 0
-    ipynb_file_size = 0
-    exe_file_num = 0
-    exe_file_size = 0
-    txt_file_num = 0
-    txt_file_size = 0
-    csv_file_num = 0
-    csv_file_size = 0
-    pdf_file_num = 0
-    pdf_file_size = 0
-    other_file_num = 0
-    other_file_size = 0
+    logging.info('#' * 50)
+    logging.info('-typ: This will take a while please wait.')
     drive = "/Volumes/Macintosh HD/Users"
+    type_dicts = {}
     for each_drive in drive:
         if os.path.exists(drive + each_drive):
             path = drive + each_drive
-            try:
-                for root, dirs, files in os.walk(path):
-                    for file in files:
-                        filepath = os.path.join(root, file)
-                        if os.path.splitext(file)[-1] == '.py':
-                            py_file_num += 1
-                            py_file_size += os.stat(filepath).st_size
-                        elif os.path.splitext(file)[-1] == '.ipynb':
-                            ipynb_file_num += 1
-                            ipynb_file_size += os.stat(filepath).st_size
-                        elif os.path.splitext(file)[-1] == '.exe':
-                            exe_file_num += 1
-                            exe_file_size += os.stat(filepath).st_size
-                        elif os.path.splitext(file)[-1] == '.txt':
-                            txt_file_num += 1
-                            txt_file_size += os.stat(filepath).st_size
-                        elif os.path.splitext(file)[-1] == '.csv':
-                            csv_file_num += 1
-                            csv_file_size += os.stat(filepath).st_size
-                        elif os.path.splitext(file)[-1] == '.pdf':
-                            pdf_file_num += 1
-                            pdf_file_size += os.stat(filepath).st_size
-                        else:
-                            other_file_num += 1
-                            other_file_size += os.stat(filepath).st_size
-            except FileNotFoundError as fnf:
-                logging.warning('{} not found {}'.format(path, fnf))
-            except OSError as ose:
-                logging.critical('Cannot access {} .Probably a permissions error {}'.format(path, ose))
+            for root, dirs, files in os.walk(path):
+                for file in files:
+                    filepath = os.path.join(root, file)
+                    type = os.path.splitext(file)[-1].lower()
+                    size = os.stat(filepath).st_size
+                    if type in type_dicts.keys():
+                        type_dicts[type]['file_count'] += 1
+                        type_dicts[type]['total_size'] = type_dicts[type]['total_size'] + size
+                    else:
+                        type_dicts[type] = {'file_count': 1, 'total_size': size}
 
-    if typ == 'all':
-        logging.info('This will take a while please wait.')
-        logging.info(
-            'Number of type .py files is {:10d}, total size is {}'.format(py_file_num, sizeConvert(py_file_size)))
-        logging.info(
-            'Number of type .ipynb files is {:10d}, total size is {}'.format(ipynb_file_num,
-                                                                                 sizeConvert(ipynb_file_size)))
-        logging.info(
-            'Number of type .exe files is {:10d}, total size is {}'.format(exe_file_num, sizeConvert(exe_file_size)))
-        logging.info(
-            'Number of type .txt files is {:10d}, total size is {}'.format(txt_file_num, sizeConvert(txt_file_size)))
-        logging.info(
-            'Number of type .csv files is {:10d}, total size is {}'.format(csv_file_num, sizeConvert(csv_file_size)))
-        logging.info(
-            'Number of type .pdf files is {:10d}, total size is {}'.format(pdf_file_num, sizeConvert(pdf_file_size)))
-        logging.info(
-            'Number of other type files is {:10d}, total size is {}'.format(other_file_num,
-                                                                               sizeConvert(other_file_size)))
-    elif typ == 'py':
-        logging.info(
-            'Number of type .py files is {:10d}, total size is {}'.format(py_file_num, sizeConvert(py_file_size)))
-    elif typ == 'ipynb':
-        logging.info(
-            'Number of type .ipynb files is {:10d}, total size is {}'.format(ipynb_file_num,
-                                                                                 sizeConvert(ipynb_file_size)))
-    elif typ == 'exe':
-        logging.info(
-            'Number of type .exe files is {:10d}, total size is {}'.format(exe_file_num, sizeConvert(exe_file_size)))
-    elif typ == 'txt':
-        logging.info(
-            'Number of type .txt files is {:10d}, total size is {}'.format(txt_file_num, sizeConvert(txt_file_size)))
-    elif typ == 'csv':
-        logging.info(
-            'Number of type .csv files is {:10d}, total size is {}'.format(csv_file_num, sizeConvert(csv_file_size)))
-    elif typ == 'pdf':
-        logging.info(
-            'Number of type .pdf files is {:10d}, total size is {}'.format(pdf_file_num, sizeConvert(pdf_file_size)))
-    elif typ == 'other':
-        logging.info(
-            'Number of other type files is {:10d}, total size is {}'.format(other_file_num,
-                                                                            sizeConvert(other_file_size)))
+    sorted_tups = sorted(type_dicts.items())
+
+    if typ == 'everything':
+        for ft in sorted_tups:
+            file_count = dict(ft[1])['file_count']
+            total_size = sizeConvert(dict(ft[1])['total_size'])
+            logging.info(
+                'Type: {:10}, File-Count: {}, Total-Size: {}'.format(ft[0], file_count, total_size))
     else:
-        logging.warning('unable to recognize this format')
+        if typ[0] != '.':
+            typ = '.' + typ
+        for ft in sorted_tups:
+            if ft[0] == typ:
+                file_count = dict(ft[1])['file_count']
+                total_size = sizeConvert(dict(ft[1])['total_size'])
+                logging.info(
+                    'Type: {:10}, File-Count: {}, Total-Size: {}'.format(ft[0], file_count, total_size))
 
 
 def everything_win(typ):
-    py_file_num = 0
-    py_file_size = 0
-    ipynb_file_num = 0
-    ipynb_file_size = 0
-    exe_file_num = 0
-    exe_file_size = 0
-    txt_file_num = 0
-    txt_file_size = 0
-    csv_file_num = 0
-    csv_file_size = 0
-    pdf_file_num = 0
-    pdf_file_size = 0
-    other_file_num = 0
-    other_file_size = 0
-    logging.info('This will take a while please wait.')
+    logging.info('#' * 50)
+    logging.info('-typ: This will take a while please wait.')
     drive = string.ascii_uppercase
+    type_dicts = {}
     for each_drive in drive:
         if os.path.exists(each_drive + ":\\"):
             path = each_drive + ":\\"
-            try:
-                for root, dirs, files in os.walk(path):
-                    for file in files:
-                        filepath = os.path.join(root, file)
-                        if os.path.splitext(file)[-1] == '.py':
-                            py_file_num += 1
-                            py_file_size += os.stat(filepath).st_size
-                        elif os.path.splitext(file)[-1] == '.ipynb':
-                            ipynb_file_num += 1
-                            ipynb_file_size += os.stat(filepath).st_size
-                        elif os.path.splitext(file)[-1] == '.exe':
-                            exe_file_num += 1
-                            exe_file_size += os.stat(filepath).st_size
-                        elif os.path.splitext(file)[-1] == '.txt':
-                            txt_file_num += 1
-                            txt_file_size += os.stat(filepath).st_size
-                        elif os.path.splitext(file)[-1] == '.csv':
-                            csv_file_num += 1
-                            csv_file_size += os.stat(filepath).st_size
-                        elif os.path.splitext(file)[-1] == '.pdf':
-                            pdf_file_num += 1
-                            pdf_file_size += os.stat(filepath).st_size
-                        else:
-                            other_file_num += 1
-                            other_file_size += os.stat(filepath).st_size
-            except FileNotFoundError as fnf:
-                logging.warning('{} not found {}'.format(path, fnf))
-            except OSError as ose:
-                logging.critical('Cannot access {} .Probably a permissions error {}'.format(path, ose))
-    
-    if typ == 'all':
-        logging.info('This will take a while please wait.')
-        logging.info(
-            'Number of type .py files is {:10d}, total size is {}'.format(py_file_num, sizeConvert(py_file_size)))
-        logging.info(
-            'Number of type .ipynb files is {:10d}, total size is {}'.format(ipynb_file_num,
-                                                                             sizeConvert(ipynb_file_size)))
-        logging.info(
-            'Number of type .exe files is {:10d}, total size is {}'.format(exe_file_num, sizeConvert(exe_file_size)))
-        logging.info(
-            'Number of type .txt files is {:10d}, total size is {}'.format(txt_file_num, sizeConvert(txt_file_size)))
-        logging.info(
-            'Number of type .csv files is {:10d}, total size is {}'.format(csv_file_num, sizeConvert(csv_file_size)))
-        logging.info(
-            'Number of type .pdf files is {:10d}, total size is {}'.format(pdf_file_num, sizeConvert(pdf_file_size)))
-        logging.info(
-            'Number of other type files is {:10d}, total size is {}'.format(other_file_num,
-                                                                           sizeConvert(other_file_size)))
-    elif typ == 'py':
-        logging.info(
-            'Number of type .py files is {:10d}, total size is {}'.format(py_file_num, sizeConvert(py_file_size)))
-    elif typ == 'ipynb':
-        logging.info(
-            'Number of type .ipynb files is {:10d}, total size is {}'.format(ipynb_file_num,
-                                                                             sizeConvert(ipynb_file_size)))
-    elif typ == 'exe':
-        logging.info(
-            'Number of type .exe files is {:10d}, total size is {}'.format(exe_file_num, sizeConvert(exe_file_size)))
-    elif typ == 'txt':
-        logging.info(
-            'Number of type .txt files is {:10d}, total size is {}'.format(txt_file_num, sizeConvert(txt_file_size)))
-    elif typ == 'csv':
-        logging.info(
-            'Number of type .csv files is {:10d}, total size is {}'.format(csv_file_num, sizeConvert(csv_file_size)))
-    elif typ == 'pdf':
-        logging.info(
-            'Number of type .pdf files is {:10d}, total size is {}'.format(pdf_file_num, sizeConvert(pdf_file_size)))
-    elif typ == 'other':
-        logging.info(
-            'Number of other type files is {:10d}, total size is {}'.format(other_file_num,
-                                                                            sizeConvert(other_file_size)))
+            for root, dirs, files in os.walk(path):
+                for file in files:
+                    filepath = os.path.join(root, file)
+                    type = os.path.splitext(file)[-1].lower()
+                    size = os.stat(filepath).st_size
+                    if type in type_dicts.keys():
+                        type_dicts[type]['file_count'] += 1
+                        type_dicts[type]['total_size'] = type_dicts[type]['total_size'] + size
+                    else:
+                        type_dicts[type] = {'file_count': 1, 'total_size': size}
+
+    sorted_tups = sorted(type_dicts.items())
+
+    if typ == 'everything':
+        for ft in sorted_tups:
+            file_count = dict(ft[1])['file_count']
+            total_size = sizeConvert(dict(ft[1])['total_size'])
+            logging.info('Type: {:10}, File-Count: {}, Total-Size: {}'.format(ft[0], file_count, total_size))
     else:
-        logging.warning('unable to recognize this format')
+        if typ[0] != '.':
+            typ = '.' + typ
+        for ft in sorted_tups:
+            if ft[0] == typ:
+                file_count = dict(ft[1])['file_count']
+                total_size = sizeConvert(dict(ft[1])['total_size'])
+                logging.info('Type: {:10}, File-Count: {}, Total-Size: {}'.format(ft[0], file_count, total_size))
 
 
 logging.basicConfig(level=logging.DEBUG,
@@ -479,7 +371,7 @@ def main():
                         help='lists file details for all files in the path that is entered, eg: -f C:\\path\\file',
                         nargs='?', const='all')
     parser.add_argument('-t', '--typ', help='lists file type details for the "file type" that is entered, eg: -t exe',
-                        nargs='?', const='all')
+                        nargs='?', const='everything')
     args = parser.parse_args()
 
     # VERBOSE MODE
@@ -508,11 +400,36 @@ def main():
                 get_folder_info(args.fld)
                 print('Job completed in verbose mode, please check info.log for details')
             if args.fil:
-                get_all_files(args.fil)
-                print('Job completed in verbose mode, please check info.log for details')
+                if args.fil == 'all':
+                    start = ''
+                    print('\nALERT: Are you sure you want to run -f with no parameters?')
+                    print('ALERT: This has the potential to log over 1M lines!')
+                    print('ALERT: Consider passing a parameter to search for. Ex) "-f my_doc.txt"')
+                    print('\nALERT: To exit and pass a parameter, please enter "N".')
+                    print('ALERT: To continue with no parameters, enter "Y".')
+                    start = input('Entry: ')
+                    if start in ['y', 'Y', 'yes', 'Yes', 'YES']:
+                        get_all_files(args.fil)
+                        print('Job completed in verbose mode, please check info.log for details')
+                else:
+                    get_all_files(args.fil)
+                    print('Job completed in verbose mode, please check info.log for details')
+
             if args.typ:
-                get_all_types(args.typ)
-                print('Job completed in verbose mode, please check info.log for details')
+                if args.typ == 'everything':
+                    start = ''
+                    print('\nALERT: Are you sure you want to run -t with no parameters?')
+                    print('ALERT: This has the potential to log over 1M lines!')
+                    print('ALERT: Consider passing a parameter to search for. Ex) "-t pdf"')
+                    print('\nALERT: To exit and pass a parameter, please enter "N".')
+                    print('ALERT: To continue with no parameters, enter "Y".')
+                    start = input('Entry: ')
+                    if start in ['y', 'Y', 'yes', 'Yes', 'YES']:
+                        get_all_types(args.typ)
+                        print('Job completed in verbose mode, please check info.log for details')
+                else:
+                    get_all_types(args.typ)
+                    print('Job completed in verbose mode, please check info.log for details')
 
     # DEFAULT MODE OR QUIET MODE
     else:
@@ -534,11 +451,36 @@ def main():
             get_folder_info(args.fld)
             print('Job completed in quiet mode, please check info.log for details')
         if args.fil:
-            get_all_files(args.fil)
-            print('Job completed in quiet mode, please check info.log for details')
+            if args.fil == 'all':
+                start = ''
+                print('\nALERT: Are you sure you want to run -f with no parameters?')
+                print('ALERT: This has the potential to log over 1M lines!')
+                print('ALERT: Consider passing a parameter to search for. Ex) "-f my_doc.txt"')
+                print('\nALERT: To exit and pass a parameter, please enter "N".')
+                print('ALERT: To continue with no parameters, enter "Y".')
+                start = input('Entry: ')
+                if start in ['y', 'Y', 'yes', 'Yes', 'YES']:
+                    get_all_files(args.fil)
+                    print('Job completed in verbose mode, please check info.log for details')
+            else:
+                get_all_files(args.fil)
+                print('Job completed in quiet mode, please check info.log for details')
+
         if args.typ:
-            get_all_types(args.typ)
-            print('Job completed in quiet mode, please check info.log for details')
+            if args.typ == 'everything':
+                start = ''
+                print('\nALERT: Are you sure you want to run -t with no parameters?')
+                print('ALERT: This has the potential to log over 1M lines!')
+                print('ALERT: Consider passing a parameter to search for. Ex) "-t pdf"')
+                print('\nALERT: To exit and pass a parameter, please enter "N".')
+                print('ALERT: To continue with no parameters, enter "Y".')
+                start = input('Entry: ')
+                if start in ['y', 'Y', 'yes', 'Yes', 'YES']:
+                    get_all_types(args.typ)
+                    print('Job completed in quiet mode, please check info.log for details')
+            else:
+                get_all_types(args.typ)
+                print('Job completed in quiet mode, please check info.log for details')
 
 
 if __name__ == '__main__':
