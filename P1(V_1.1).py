@@ -419,7 +419,7 @@ def main():
                 if args.typ == 'everything':
                     start = ''
                     print('\nALERT: Are you sure you want to run -t with no parameters?')
-                    print('ALERT: This has the potential to log over 1M lines!')
+                    print('ALERT: This has the potential to log thousands of lines!')
                     print('ALERT: Consider passing a parameter to search for. Ex) "-t pdf"')
                     print('\nALERT: To exit and pass a parameter, please enter "N".')
                     print('ALERT: To continue with no parameters, enter "Y".')
@@ -470,7 +470,7 @@ def main():
             if args.typ == 'everything':
                 start = ''
                 print('\nALERT: Are you sure you want to run -t with no parameters?')
-                print('ALERT: This has the potential to log over 1M lines!')
+                print('ALERT: This has the potential to log thousands of lines!')
                 print('ALERT: Consider passing a parameter to search for. Ex) "-t pdf"')
                 print('\nALERT: To exit and pass a parameter, please enter "N".')
                 print('ALERT: To continue with no parameters, enter "Y".')
