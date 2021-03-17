@@ -267,16 +267,21 @@ def everything_mac(typ):
     for each_drive in drive:
         if os.path.exists(drive + each_drive):
             path = drive + each_drive
-            for root, dirs, files in os.walk(path):
-                for file in files:
-                    filepath = os.path.join(root, file)
-                    type = os.path.splitext(file)[-1].lower()
-                    size = os.stat(filepath).st_size
-                    if type in type_dicts.keys():
-                        type_dicts[type]['file_count'] += 1
-                        type_dicts[type]['total_size'] = type_dicts[type]['total_size'] + size
-                    else:
-                        type_dicts[type] = {'file_count': 1, 'total_size': size}
+            try:
+                for root, dirs, files in os.walk(path):
+                    for file in files:
+                        filepath = os.path.join(root, file)
+                        type = os.path.splitext(file)[-1].lower()
+                        size = os.stat(filepath).st_size
+                        if type in type_dicts.keys():
+                            type_dicts[type]['file_count'] += 1
+                            type_dicts[type]['total_size'] = type_dicts[type]['total_size'] + size
+                        else:
+                            type_dicts[type] = {'file_count': 1, 'total_size': size}
+            except FileNotFoundError as fnf:
+                logging.warning('{} not found {}'.format(path, fnf))
+            except OSError as ose:
+                logging.critical('Cannot access {} .Probably a permissions error {}'.format(path, ose))
 
     sorted_tups = sorted(type_dicts.items())
 
@@ -305,16 +310,21 @@ def everything_win(typ):
     for each_drive in drive:
         if os.path.exists(each_drive + ":\\"):
             path = each_drive + ":\\"
-            for root, dirs, files in os.walk(path):
-                for file in files:
-                    filepath = os.path.join(root, file)
-                    type = os.path.splitext(file)[-1].lower()
-                    size = os.stat(filepath).st_size
-                    if type in type_dicts.keys():
-                        type_dicts[type]['file_count'] += 1
-                        type_dicts[type]['total_size'] = type_dicts[type]['total_size'] + size
-                    else:
-                        type_dicts[type] = {'file_count': 1, 'total_size': size}
+            try:
+                for root, dirs, files in os.walk(path):
+                    for file in files:
+                        filepath = os.path.join(root, file)
+                        type = os.path.splitext(file)[-1].lower()
+                        size = os.stat(filepath).st_size
+                        if type in type_dicts.keys():
+                            type_dicts[type]['file_count'] += 1
+                            type_dicts[type]['total_size'] = type_dicts[type]['total_size'] + size
+                        else:
+                            type_dicts[type] = {'file_count': 1, 'total_size': size}
+            except FileNotFoundError as fnf:
+                logging.warning('{} not found {}'.format(path, fnf))
+            except OSError as ose:
+                logging.critical('Cannot access {} .Probably a permissions error {}'.format(path, ose))
 
     sorted_tups = sorted(type_dicts.items())
 
