@@ -2,18 +2,18 @@
 
 Author: XI ZHOU
 Author: ALEX ONEILL
+Author: RICH GIANNETTI
+Author: SAAHIIL MESWAANII
 
-Version update: 2021.3.5
-Version : 0.85
-NOTE: need to wrap it up with argparse
-
-Version update: 2021.3.9
+Version update: 2021.3.17
 Version : 1
 NOTE: finished project with requirements
 
+CS632P - Python Programming (Prof. Sarbanes)
+Group 11 - Project 1
+
 """
 import os
-import pathlib
 import shutil
 import string
 import time
@@ -362,7 +362,7 @@ def main():
     me_group.add_argument('-v', '--verbose', action='store_true')
     me_group.add_argument('-q', '--quiet', action='store_true')
     parser.add_argument('-d', '--drv',
-                        help='lists drive details for the drive letter that is entered, eg: -l C:',
+                        help='lists drive details for the drive letter that is entered, eg: -d C:',
                         nargs='?', const=string.ascii_uppercase)
     parser.add_argument('-l', '--fld',
                         help='lists folder details for all folders in the path that is entered, eg: -l C:',
@@ -414,7 +414,6 @@ def main():
                 else:
                     get_all_files(args.fil)
                     print('Job completed in verbose mode, please check info.log for details')
-
             if args.typ:
                 if args.typ == 'everything':
                     start = ''
