@@ -1,4 +1,6 @@
 # OSScanning-Argparse_and_Logging
+***Slides Available At:*** https://docs.google.com/presentation/d/1tAmL0n9-nAWvPEFy1D3x048KOYDG-9iiinw4sPsmSGE/edit?usp=sharing  
+
 CS632P Project 1 - Scanning OS files with argparse and logging
 
 In this assignment you will need to use Python’s argparse and logging modules.
