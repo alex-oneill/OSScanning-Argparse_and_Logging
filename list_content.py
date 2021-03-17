@@ -176,23 +176,29 @@ def get_all_files_mac(fil):
         for each_drive in drive:
             if os.path.exists(drive + each_drive):
                 dir = drive + each_drive
-                for root, dirs, files in os.walk(dir):
-                    for file in files:
-                        filepath = os.path.join(root, file)
-                        if os.path.isfile(filepath):
-                            filename = file
-                            filetype = os.path.splitext(file)[1]
-                            filesize = sizeConvert(os.stat(filepath).st_size)
-                            filetime = time.strftime('%Y-%m-%d %H:%M:%S',
-                                                     time.localtime(os.stat(fil).st_ctime))
-                            if filename.lower() == fil.lower():
-                                found_file = True
-                                logging.info('File found at path: {}'.format(filepath))
-                                logging.info(
-                                    'filename: {:30}, filetype: {:7} filesize: {:10}, time stamp: {}'.format(filename,
-                                                                                                             filetype,
-                                                                                                             filesize,
-                                                                                                             filetime))
+                try:
+                    for root, dirs, files in os.walk(dir):
+                        for file in files:
+                            filepath = os.path.join(root, file)
+                            if os.path.isfile(filepath):
+                                filename = file
+                                filetype = os.path.splitext(file)[1]
+                                filesize = sizeConvert(os.stat(filepath).st_size)
+                                filetime = time.strftime('%Y-%m-%d %H:%M:%S',
+                                                         time.localtime(os.stat(fil).st_ctime))
+                                if filename.lower() == fil.lower():
+                                    found_file = True
+                                    logging.info('File found at path: {}'.format(filepath))
+                                    logging.info(
+                                        'filename: {:30}, filetype: {:7} filesize: {:10}, time stamp: {}'.format(filename,
+                                                                                                                 filetype,
+                                                                                                                 filesize,
+                                                                                                                 filetime))
+                except FileNotFoundError as fnf:
+                    logging.warning('{} not found {}'.format(dir, fnf))
+                except OSError as ose:
+                    logging.critical('Cannot access {} .Probably a permissions error {}'.format(dir, ose))
+        
         if not found_file:
             logging.warning('Unable to find file: {}'.format(fil))
 
