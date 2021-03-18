@@ -55,7 +55,7 @@ def list_drives_win(drive=string.ascii_uppercase):
             usage = shutil.disk_usage(path)
             dirnum = 0
             filenum = 0
-            logging.info('#' * 50)
+            logging.info('In Drive {}'.format(drive))
             logging.info('Drives total size: {}'.format(sizeConvert(usage.total)))
             logging.info('Drives used size: {}'.format(sizeConvert(usage.used)))
             logging.info('Drives free size: {}'.format(sizeConvert(usage.free)))
@@ -480,7 +480,6 @@ def main():
             else:
                 get_all_files(args.fil)
                 print('Job completed in quiet mode, please check info.log for details')
-
         if args.typ:
             if args.typ == 'everything':
                 start = ''
