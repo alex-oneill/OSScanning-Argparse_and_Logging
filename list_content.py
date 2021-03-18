@@ -236,23 +236,28 @@ def get_all_files_win(fil):
         for each_drive in drive:
             if os.path.exists(each_drive + ":\\"):
                 dir = each_drive + ":\\"
-                for root, dirs, files in os.walk(dir):
-                    for file in files:
-                        filepath = os.path.join(root, file)
-                        if os.path.isfile(filepath):
-                            filename = file
-                            filetype = os.path.splitext(file)[1]
-                            filesize = sizeConvert(os.stat(filepath).st_size)
-                            filetime = time.strftime('%Y-%m-%d %H:%M:%S',
-                                                     time.localtime(os.stat(filepath).st_ctime))
-                            if filename.lower() == fil.lower():
-                                found_file = True
-                                logging.info('File found at path: {}'.format(filepath))
-                                logging.info(
-                                    'filename: {:30}, filetype: {:7} filesize: {:10}, time stamp: {}'.format(filename,
-                                                                                                             filetype,
-                                                                                                             filesize,
-                                                                                                             filetime))
+                try:
+                    for root, dirs, files in os.walk(dir):
+                        for file in files:
+                            filepath = os.path.join(root, file)
+                            if os.path.isfile(filepath):
+                                filename = file
+                                filetype = os.path.splitext(file)[1]
+                                filesize = sizeConvert(os.stat(filepath).st_size)
+                                filetime = time.strftime('%Y-%m-%d %H:%M:%S',
+                                                         time.localtime(os.stat(filepath).st_ctime))
+                                if filename.lower() == fil.lower():
+                                    found_file = True
+                                    logging.info('File found at path: {}'.format(filepath))
+                                    logging.info(
+                                        'filename: {:30}, filetype: {:7} filesize: {:10}, time stamp: {}'.format(filename,
+                                                                                                                 filetype,
+                                                                                                                 filesize,
+                                                                                                                 filetime))
+                except FileNotFoundError as fnf:
+                    logging.warning('{} not found {}'.format(dir, fnf))
+                except OSError as ose:
+                    logging.critical('Cannot access {} .Probably a permissions error {}'.format(dir, ose))
         if not found_file:
             logging.warning('Unable to find file: {}'.format(fil))
 
@@ -273,7 +278,6 @@ def everything_mac(typ):  # working
         if os.path.exists(drive + each_drive):
             path = drive + each_drive
             try:
-
                 for root, dirs, files in os.walk(path):
                     for file in files:
                         filepath = os.path.join(root, file)
@@ -316,16 +320,21 @@ def everything_win(typ):
     for each_drive in drive:
         if os.path.exists(each_drive + ":\\"):
             path = each_drive + ":\\"
-            for root, dirs, files in os.walk(path):
-                for file in files:
-                    filepath = os.path.join(root, file)
-                    type = os.path.splitext(file)[-1].lower()
-                    size = os.stat(filepath).st_size
-                    if type in type_dicts.keys():
-                        type_dicts[type]['file_count'] += 1
-                        type_dicts[type]['total_size'] = type_dicts[type]['total_size'] + size
-                    else:
-                        type_dicts[type] = {'file_count': 1, 'total_size': size}
+            try:
+                for root, dirs, files in os.walk(path):
+                    for file in files:
+                        filepath = os.path.join(root, file)
+                        type = os.path.splitext(file)[-1].lower()
+                        size = os.stat(filepath).st_size
+                        if type in type_dicts.keys():
+                            type_dicts[type]['file_count'] += 1
+                            type_dicts[type]['total_size'] = type_dicts[type]['total_size'] + size
+                        else:
+                            type_dicts[type] = {'file_count': 1, 'total_size': size}
+            except FileNotFoundError as fnf:
+                logging.warning('{} not found {}'.format(path, fnf))
+            except OSError as ose:
+                logging.critical('Cannot access {} .Probably a permissions error {}'.format(path, ose))
 
     sorted_tups = sorted(type_dicts.items())
 
