@@ -55,7 +55,7 @@ def list_drives_win(drive=string.ascii_uppercase):
             usage = shutil.disk_usage(path)
             dirnum = 0
             filenum = 0
-            logging.info('#' * 50)
+            logging.info('In Drive {}'.format(each_drive))
             logging.info('Drives total size: {}'.format(sizeConvert(usage.total)))
             logging.info('Drives used size: {}'.format(sizeConvert(usage.used)))
             logging.info('Drives free size: {}'.format(sizeConvert(usage.free)))
@@ -199,7 +199,6 @@ def get_all_files_mac(fil):
                     logging.warning('{} not found {}'.format(dir, fnf))
                 except OSError as ose:
                     logging.critical('Cannot access {} .Probably a permissions error {}'.format(dir, ose))
-
         if not found_file:
             logging.warning('Unable to find file: {}'.format(fil))
 
@@ -259,7 +258,6 @@ def get_all_files_win(fil):
 
 
 def get_all_types(typ):
-
     if os.name == 'posix':
         everything_mac(typ)
     else:
@@ -477,7 +475,6 @@ def main():
             else:
                 get_all_files(args.fil)
                 print('Job completed in quiet mode, please check info.log for details')
-
         if args.typ:
             if args.typ == 'everything':
                 start = ''
