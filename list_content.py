@@ -55,7 +55,7 @@ def list_drives_win(drive=string.ascii_uppercase):
             usage = shutil.disk_usage(path)
             dirnum = 0
             filenum = 0
-            logging.info('In Drive {}'.format(drive))
+            logging.info('In Drive {}'.format(each_drive))
             logging.info('Drives total size: {}'.format(sizeConvert(usage.total)))
             logging.info('Drives used size: {}'.format(sizeConvert(usage.used)))
             logging.info('Drives free size: {}'.format(sizeConvert(usage.free)))
