@@ -13,6 +13,7 @@ CS632P - Python Programming (Prof. Sarbanes)
 Group 11 - Project 1
 
 """
+from __future__ import print_function
 import os
 import shutil
 import string
@@ -21,6 +22,17 @@ import argparse
 import logging
 import textwrap
 from pathlib import Path
+import sys
+
+class ProgressBar(object): #creating a custom class for progress info
+    def __init__(self,output=sys.stderr):
+        self.current_file = 0 #counter for files
+        # self.current_dir = 0
+        self.output = output
+
+    def __call__(self):
+        '''+ ' Dir Processed: ' + str(self.current_dir)'''
+        print(' : File Processed \r' + str(self.current_file) , file=self.output, end='')
 
 
 def sizeConvert(size):
@@ -55,17 +67,21 @@ def list_drives_win(drive=string.ascii_uppercase):
             usage = shutil.disk_usage(path)
             dirnum = 0
             filenum = 0
+
             logging.info('#' * 50)
             logging.info('Drives total size: {}'.format(sizeConvert(usage.total)))
             logging.info('Drives used size: {}'.format(sizeConvert(usage.used)))
             logging.info('Drives free size: {}'.format(sizeConvert(usage.free)))
             logging.debug('counting files and directories now please wait.')
+            progress = ProgressBar()
             for root, dirs, files in os.walk(path):
                 try:
                     for file in files:
                         filepath = os.path.join(root, file)
                         if os.path.isfile(filepath):
                             filenum += 1
+                            progress.current_file = filenum
+                            progress()
                     for dir in dirs:
                         dirpath = os.path.join(root, dir)
                         if os.path.isdir(dirpath):
@@ -91,16 +107,23 @@ def list_drives_mac(drive="/Volumes"):
     logging.info('Drives free size: {}'.format(sizeConvert(usage.free)))
     logging.debug('counting files and directories now please wait.')
     to_iterate_drive = drive + "/Macintosh HD"
+
+    progress = ProgressBar()
+
     for root, dirs, files in os.walk(to_iterate_drive):
         try:
             for file in files:
-                filepath = os.path.join(root, file)        
+                filepath = os.path.join(root, file)
                 if os.path.isfile(filepath):
                     filenum += 1
+                    progress.current_file = filenum
+                    progress()
             for dir in dirs:
                 dirpath = os.path.join(root, dir)
                 if os.path.isdir(dirpath):
                     dirnum += 1
+                    # progress.current_dir += 1
+                    # progress()
         except FileNotFoundError as fnf:
             logging.warning('{} not found {}'.format(drive, fnf))
         except OSError as ose:
