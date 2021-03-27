@@ -5,6 +5,10 @@ Author: ALEX ONEILL
 Author: RICH GIANNETTI
 Author: SAAHIIL MESWAANII
 
+Version update: 2021.3.27
+Version : 2
+NOTE: enhanced by adding file-count counters
+
 Version update: 2021.3.17
 Version : 1
 NOTE: finished project with requirements
@@ -71,6 +75,7 @@ def list_drives_win(drive=string.ascii_uppercase):
             filenum = 0
 
             logging.info('#' * 50)
+            logging.info('In Drive {}'.format(each_drive))
             logging.info('Drives total size: {}'.format(sizeConvert(usage.total)))
             logging.info('Drives used size: {}'.format(sizeConvert(usage.used)))
             logging.info('Drives free size: {}'.format(sizeConvert(usage.free)))
@@ -95,7 +100,7 @@ def list_drives_win(drive=string.ascii_uppercase):
             logging.info('The total number of files is: {}'.format(filenum))
 
 
-def list_drives_mac(drive="/Volumes"):
+def list_drives_mac(drive="/Volumes"):  # working
     logging.info('#' * 50)
     logging.info('-fld')
     drive = drive
@@ -131,7 +136,7 @@ def list_drives_mac(drive="/Volumes"):
     logging.info('The total number of files is: {}'.format(filenum))
 
 
-def get_folder_info(dir):
+def get_folder_info(dir):  # working
     logging.info('#' * 50)
     logging.info('-fld')
     if os.path.exists(dir):
@@ -226,11 +231,11 @@ def get_all_files_mac(fil):
                                                                                                                  filetype,
                                                                                                                  filesize,
                                                                                                                  filetime))
+
                 except FileNotFoundError as fnf:
                     logging.warning('{} not found {}'.format(dir, fnf))
                 except OSError as ose:
                     logging.critical('Cannot access {} .Probably a permissions error {}'.format(dir, ose))
-        
         if not found_file:
             logging.warning('Unable to find file: {}'.format(fil))
 
@@ -275,39 +280,43 @@ def get_all_files_win(fil):
         for each_drive in drive:
             if os.path.exists(each_drive + ":\\"):
                 dir = each_drive + ":\\"
-                for root, dirs, files in os.walk(dir):
-                    for file in files:
-                        filepath = os.path.join(root, file)
-                        if os.path.isfile(filepath):
-                            filename = file
-                            filetype = os.path.splitext(file)[1]
-                            filesize = sizeConvert(os.stat(filepath).st_size)
-                            filetime = time.strftime('%Y-%m-%d %H:%M:%S',
-                                                     time.localtime(os.stat(filepath).st_ctime))
-                            filenum += 1
-                            progress.current_file = filenum
-                            progress()
-                            if filename.lower() == fil.lower():
-                                found_file = True
-                                logging.info('File found at path: {}'.format(filepath))
-                                logging.info(
-                                    'filename: {:30}, filetype: {:7} filesize: {:10}, time stamp: {}'.format(filename,
-                                                                                                             filetype,
-                                                                                                             filesize,
-                                                                                                             filetime))
+                try:
+                    for root, dirs, files in os.walk(dir):
+                        for file in files:
+                            filepath = os.path.join(root, file)
+                            if os.path.isfile(filepath):
+                                filename = file
+                                filetype = os.path.splitext(file)[1]
+                                filesize = sizeConvert(os.stat(filepath).st_size)
+                                filetime = time.strftime('%Y-%m-%d %H:%M:%S',
+                                                         time.localtime(os.stat(filepath).st_ctime))
+                                filenum += 1
+                                progress.current_file = filenum
+                                progress()
+                                if filename.lower() == fil.lower():
+                                    found_file = True
+                                    logging.info('File found at path: {}'.format(filepath))
+                                    logging.info(
+                                        'filename: {:30}, filetype: {:7} filesize: {:10}, time stamp: {}'.format(filename,
+                                                                                                                 filetype,
+                                                                                                                 filesize,
+                                                                                                                 filetime))
+                except FileNotFoundError as fnf:
+                    logging.warning('{} not found {}'.format(dir, fnf))
+                except OSError as ose:
+                    logging.critical('Cannot access {} .Probably a permissions error {}'.format(dir, ose))
         if not found_file:
             logging.warning('Unable to find file: {}'.format(fil))
 
 
 def get_all_types(typ):
-
     if os.name == 'posix':
         everything_mac(typ)
     else:
         everything_win(typ)
 
 
-def everything_mac(typ):
+def everything_mac(typ):  # working
     logging.info('#' * 50)
     logging.info('-typ: This will take a while please wait.')
     drive = "/Volumes/Macintosh HD/Users"
@@ -532,7 +541,6 @@ def main():
             else:
                 get_all_files(args.fil)
                 print('Job completed in quiet mode, please check info.log for details')
-
         if args.typ:
             if args.typ == 'everything':
                 start = ''
