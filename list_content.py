@@ -29,18 +29,22 @@ from pathlib import Path
 import sys
 
 
-class ProgressBar(object): #creating a custom class for progress info
+# SECTION: PROGRESS BAR
+class ProgressBar(object):
+    """Class ProgressBar stores and returns file counters to the command line"""
+
     def __init__(self, output=sys.stderr):
-        self.current_file = 0 #counter for files
-        # self.current_dir = 0
+        self.current_file = 0
         self.output = output
 
     def __call__(self):
-        '''+ ' Dir Processed: ' + str(self.current_dir)'''
+        """Prints number of files processed to the command line when the object is called"""
         print('{} : File Processed'.format(str(self.current_file)) + '\r', file=self.output, end='')
 
 
-def sizeConvert(size):
+# SECTION: SIZE CONVERSION
+def sizeConvert(size: int) -> str:
+    """This function takes in byte count and returns a human readable format of the total byte size"""
     K, M, G = 1024, 1024 ** 2, 1024 ** 3
     if size >= G:
         size = format(size / G, '.2f')
@@ -55,14 +59,17 @@ def sizeConvert(size):
         return str(size) + ' Bytes'
 
 
-def list_drives(drive):
+# SECTION: -d drv FUNCTIONS
+def list_drives(drive: str) -> None:
+    """Identifies OS version then calls proper -d function"""
     if os.name == 'posix':
         list_drives_mac()
     else:
         list_drives_win(drive)
 
 
-def list_drives_win(drive=string.ascii_uppercase):
+def list_drives_win(drive: str = string.ascii_uppercase) -> None:
+    """Returns drive information including directory and file count for Windows OS"""
     logging.info('#' * 50)
     logging.info('-drv: This will take a while please wait.')
     drive = drive
@@ -100,7 +107,8 @@ def list_drives_win(drive=string.ascii_uppercase):
             logging.info('The total number of files is: {}'.format(filenum))
 
 
-def list_drives_mac(drive="/Volumes"):  # working
+def list_drives_mac(drive: str = "/Volumes") -> None:
+    """Returns drive information including directory and file count for Mac OS"""
     logging.info('#' * 50)
     logging.info('-fld')
     drive = drive
@@ -136,7 +144,9 @@ def list_drives_mac(drive="/Volumes"):  # working
     logging.info('The total number of files is: {}'.format(filenum))
 
 
-def get_folder_info(dir):  # working
+# SECTION: -l fld FUNCTION
+def get_folder_info(dir: str) -> None:
+    """Returns information about the file path that is entered"""
     logging.info('#' * 50)
     logging.info('-fld')
     if os.path.exists(dir):
@@ -162,14 +172,17 @@ def get_folder_info(dir):  # working
         logging.warning('{} is not a valid path'.format(dir))
 
 
-def get_all_files(fil):
+# SECTION: -f file FUNCTIONS
+def get_all_files(fil: str) -> None:
+    """Identifies OS version then calls proper -f function"""
     if os.name == 'posix':
         get_all_files_mac(fil)
     else:
         get_all_files_win(fil)
 
 
-def get_all_files_mac(fil):
+def get_all_files_mac(fil: str) -> None:
+    """Returns information about the file path that is entered or all files for Mac OS"""
     logging.info('#' * 50)
     logging.debug('-fil: This will take a while please wait.')
     
@@ -240,7 +253,8 @@ def get_all_files_mac(fil):
             logging.warning('Unable to find file: {}'.format(fil))
 
 
-def get_all_files_win(fil):
+def get_all_files_win(fil: str) -> None:
+    """Returns information about the the file path that is entered or all files for Windows OS"""
     logging.info('#' * 50)
     logging.debug('-fil: This will take a while please wait.')
     drive = string.ascii_uppercase
@@ -309,14 +323,17 @@ def get_all_files_win(fil):
             logging.warning('Unable to find file: {}'.format(fil))
 
 
-def get_all_types(typ):
+# SECTION: -t typ FUNCTIONS
+def get_all_types(typ: str) -> None:
+    """Identifies OS version then calls proper -t function"""
     if os.name == 'posix':
         everything_mac(typ)
     else:
         everything_win(typ)
 
 
-def everything_mac(typ):  # working
+def everything_mac(typ: str) -> None:
+    """Returns information about the file type that is entered or all types for Mac OS"""
     logging.info('#' * 50)
     logging.info('-typ: This will take a while please wait.')
     drive = "/Volumes/Macintosh HD/Users"
@@ -364,7 +381,8 @@ def everything_mac(typ):  # working
                     'Type: {:10}, File-Count: {}, Total-Size: {}'.format(ft[0], file_count, total_size))
 
 
-def everything_win(typ):
+def everything_win(typ: str) -> None:
+    """Returns information about the file type that is entered or all types for Windows OS"""
     logging.info('#' * 50)
     logging.info('-typ: This will take a while please wait.')
     drive = string.ascii_uppercase
@@ -410,6 +428,7 @@ def everything_win(typ):
                 logging.info('Type: {:10}, File-Count: {}, Total-Size: {}'.format(ft[0], file_count, total_size))
 
 
+# SECTION: LOGGING CONFIGURATION
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(levelname)s >>> %(message)s',
                     datefmt='%m-%d %H:%M',
@@ -417,7 +436,9 @@ logging.basicConfig(level=logging.DEBUG,
                     )
 
 
+# SECTION: MAIN()
 def main():
+    """Main argparse logic and function calls"""
     parser = argparse.ArgumentParser(
         add_help=False,
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -478,7 +499,6 @@ def main():
                 print('Job completed in verbose mode, please check info.log for details')
             if args.fil:
                 if args.fil == 'all':
-                    start = ''
                     print('\nALERT: Are you sure you want to run -f with no parameters?')
                     print('ALERT: This has the potential to log over 1M lines!')
                     print('ALERT: Consider passing a parameter to search for. Ex) "-f my_doc.txt"')
@@ -493,7 +513,6 @@ def main():
                     print('Job completed in verbose mode, please check info.log for details')
             if args.typ:
                 if args.typ == 'everything':
-                    start = ''
                     print('\nALERT: Are you sure you want to run -t with no parameters?')
                     print('ALERT: This has the potential to log thousands of lines!')
                     print('ALERT: Consider passing a parameter to search for. Ex) "-t pdf"')
@@ -528,7 +547,6 @@ def main():
             print('Job completed in quiet mode, please check info.log for details')
         if args.fil:
             if args.fil == 'all':
-                start = ''
                 print('\nALERT: Are you sure you want to run -f with no parameters?')
                 print('ALERT: This has the potential to log over 1M lines!')
                 print('ALERT: Consider passing a parameter to search for. Ex) "-f my_doc.txt"')
@@ -543,7 +561,6 @@ def main():
                 print('Job completed in quiet mode, please check info.log for details')
         if args.typ:
             if args.typ == 'everything':
-                start = ''
                 print('\nALERT: Are you sure you want to run -t with no parameters?')
                 print('ALERT: This has the potential to log thousands of lines!')
                 print('ALERT: Consider passing a parameter to search for. Ex) "-t pdf"')
