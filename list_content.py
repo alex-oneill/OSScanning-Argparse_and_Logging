@@ -73,6 +73,7 @@ def list_drives_win(drive: str = string.ascii_uppercase) -> None:
     logging.info('#' * 50)
     logging.info('-drv: This will take a while please wait.')
     drive = drive
+
     progress = ProgressBar()
     for each_drive in drive:
         if os.path.exists(each_drive + ":\\"):
@@ -80,7 +81,6 @@ def list_drives_win(drive: str = string.ascii_uppercase) -> None:
             usage = shutil.disk_usage(path)
             dirnum = 0
             filenum = 0
-
             logging.info('#' * 50)
             logging.info('In Drive {}'.format(each_drive))
             logging.info('Drives total size: {}'.format(sizeConvert(usage.total)))
@@ -123,7 +123,6 @@ def list_drives_mac(drive: str = "/Volumes") -> None:
     to_iterate_drive = drive + "/Macintosh HD"
 
     progress = ProgressBar()
-
     for root, dirs, files in os.walk(to_iterate_drive):
         try:
             for file in files:
@@ -185,8 +184,9 @@ def get_all_files_mac(fil: str) -> None:
     """Returns information about the file path that is entered or all files for Mac OS"""
     logging.info('#' * 50)
     logging.debug('-fil: This will take a while please wait.')
-    
     drive = "/Volumes/Macintosh HD"
+
+    # NOTE: GETTING ALL FILES NAMES
     if fil == 'all':
         progress = ProgressBar()
         filenum = 0
@@ -216,6 +216,7 @@ def get_all_files_mac(fil: str) -> None:
                 except OSError as ose:
                     logging.critical('Cannot access {} .Probably a permissions error {}'.format(dir, ose))
 
+    # NOTE: SEARCHING FOR SPECIFIC FILE NAME
     else:
         progress = ProgressBar()
         filenum = 0
@@ -258,6 +259,8 @@ def get_all_files_win(fil: str) -> None:
     logging.info('#' * 50)
     logging.debug('-fil: This will take a while please wait.')
     drive = string.ascii_uppercase
+
+    # NOTE: GETTING ALL FILES NAMES
     if fil == 'all':
         progress = ProgressBar()
         filenum = 0
@@ -287,6 +290,7 @@ def get_all_files_win(fil: str) -> None:
                 except OSError as ose:
                     logging.critical('Cannot access {} .Probably a permissions error {}'.format(dir, ose))
 
+    # NOTE: SEARCHING FOR SPECIFIC FILE NAME
     else:
         progress = ProgressBar()
         filenum = 0
@@ -364,12 +368,14 @@ def everything_mac(typ: str) -> None:
 
     sorted_tups = sorted(type_dicts.items())
 
+    # NOTE: PRINTING ALL RESULTS
     if typ == 'everything':
         for ft in sorted_tups:
             file_count = dict(ft[1])['file_count']
             total_size = sizeConvert(dict(ft[1])['total_size'])
             logging.info(
                 'Type: {:10}, File-Count: {}, Total-Size: {}'.format(ft[0], file_count, total_size))
+    # NOTE: PRINTING MATCHING FILE TYPES
     else:
         if typ[0] != '.':
             typ = '.' + typ
@@ -413,11 +419,13 @@ def everything_win(typ: str) -> None:
 
     sorted_tups = sorted(type_dicts.items())
 
+    # NOTE: PRINTING ALL RESULTS
     if typ == 'everything':
         for ft in sorted_tups:
             file_count = dict(ft[1])['file_count']
             total_size = sizeConvert(dict(ft[1])['total_size'])
             logging.info('Type: {:10}, File-Count: {}, Total-Size: {}'.format(ft[0], file_count, total_size))
+    # NOTE: PRINTING MATCHING FILE TYPES
     else:
         if typ[0] != '.':
             typ = '.' + typ
@@ -456,9 +464,11 @@ def main():
 
     parser.add_argument('-h', '--help', action='help', default=argparse.SUPPRESS,
                         help='displays this screen and provides information on what options are available for use')
+    # NOTE: -V / -Q MUTUALLY EXCLUSIVE GROUPING
     me_group = parser.add_mutually_exclusive_group()
     me_group.add_argument('-v', '--verbose', action='store_true')
     me_group.add_argument('-q', '--quiet', action='store_true')
+    # NOTE: INPUT PARAMETER ARGUMENTS
     parser.add_argument('-d', '--drv',
                         help='lists drive details for the drive letter that is entered, eg: -d C:',
                         nargs='?', const=string.ascii_uppercase)
@@ -472,11 +482,12 @@ def main():
                         nargs='?', const='everything')
     args = parser.parse_args()
 
-    # VERBOSE MODE
+    # NOTE: VERBOSE MODE
     if args.verbose:
         if not any([args.drv, args.fld, args.fil, args.typ]):
             print('No arguments entered -- please enter an argument')
         else:
+            # NOTE: VERBOSE LOGGING AND CONSOLE PRINTING
             console = logging.StreamHandler()
             console.setLevel(logging.DEBUG)
             formatter = logging.Formatter('%(asctime)s - %(levelname)s >>> %(message)s')
@@ -526,7 +537,7 @@ def main():
                     get_all_types(args.typ)
                     print('Job completed in verbose mode, please check info.log for details')
 
-    # DEFAULT MODE OR QUIET MODE
+    # NOTE: DEFAULT MODE OR QUIET MODE
     else:
         if not any([args.drv, args.fld, args.fil, args.typ]):
             print('No arguments entered -- please enter an argument')
