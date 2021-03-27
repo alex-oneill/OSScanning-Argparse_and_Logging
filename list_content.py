@@ -5,6 +5,10 @@ Author: ALEX ONEILL
 Author: RICH GIANNETTI
 Author: SAAHIIL MESWAANII
 
+Version update: 2021.3.27
+Version : 2
+NOTE: enhanced by adding file-count counters
+
 Version update: 2021.3.17
 Version : 1
 NOTE: finished project with requirements
@@ -13,6 +17,7 @@ CS632P - Python Programming (Prof. Sarbanes)
 Group 11 - Project 1
 
 """
+from __future__ import print_function
 import os
 import shutil
 import string
@@ -21,6 +26,18 @@ import argparse
 import logging
 import textwrap
 from pathlib import Path
+import sys
+
+
+class ProgressBar(object): #creating a custom class for progress info
+    def __init__(self, output=sys.stderr):
+        self.current_file = 0 #counter for files
+        # self.current_dir = 0
+        self.output = output
+
+    def __call__(self):
+        '''+ ' Dir Processed: ' + str(self.current_dir)'''
+        print('{} : File Processed'.format(str(self.current_file)) + '\r', file=self.output, end='')
 
 
 def sizeConvert(size):
@@ -49,12 +66,15 @@ def list_drives_win(drive=string.ascii_uppercase):
     logging.info('#' * 50)
     logging.info('-drv: This will take a while please wait.')
     drive = drive
+    progress = ProgressBar()
     for each_drive in drive:
         if os.path.exists(each_drive + ":\\"):
             path = each_drive + ":\\"
             usage = shutil.disk_usage(path)
             dirnum = 0
             filenum = 0
+
+            logging.info('#' * 50)
             logging.info('In Drive {}'.format(each_drive))
             logging.info('Drives total size: {}'.format(sizeConvert(usage.total)))
             logging.info('Drives used size: {}'.format(sizeConvert(usage.used)))
@@ -66,6 +86,8 @@ def list_drives_win(drive=string.ascii_uppercase):
                         filepath = os.path.join(root, file)
                         if os.path.isfile(filepath):
                             filenum += 1
+                            progress.current_file = filenum
+                            progress()
                     for dir in dirs:
                         dirpath = os.path.join(root, dir)
                         if os.path.isdir(dirpath):
@@ -91,12 +113,17 @@ def list_drives_mac(drive="/Volumes"):  # working
     logging.info('Drives free size: {}'.format(sizeConvert(usage.free)))
     logging.debug('counting files and directories now please wait.')
     to_iterate_drive = drive + "/Macintosh HD"
+
+    progress = ProgressBar()
+
     for root, dirs, files in os.walk(to_iterate_drive):
         try:
             for file in files:
-                filepath = os.path.join(root, file)        
+                filepath = os.path.join(root, file)
                 if os.path.isfile(filepath):
                     filenum += 1
+                    progress.current_file = filenum
+                    progress()
             for dir in dirs:
                 dirpath = os.path.join(root, dir)
                 if os.path.isdir(dirpath):
@@ -148,6 +175,8 @@ def get_all_files_mac(fil):
     
     drive = "/Volumes/Macintosh HD"
     if fil == 'all':
+        progress = ProgressBar()
+        filenum = 0
         for each_drive in drive:
             if os.path.exists(drive + each_drive):
                 dir = drive + each_drive
@@ -161,6 +190,9 @@ def get_all_files_mac(fil):
                                 filesize = sizeConvert(os.stat(filepath).st_size)
                                 filetime = time.strftime('%Y-%m-%d %H:%M:%S',
                                                          time.localtime(os.stat(filepath).st_ctime))
+                                filenum += 1
+                                progress.current_file = filenum
+                                progress()
                                 logging.info(
                                     'filename: {:30}, filetype: {:7} filesize: {:10}, time stamp: {}'.format(filename,
                                                                                                              filetype,
@@ -172,6 +204,8 @@ def get_all_files_mac(fil):
                     logging.critical('Cannot access {} .Probably a permissions error {}'.format(dir, ose))
 
     else:
+        progress = ProgressBar()
+        filenum = 0
         found_file = False
         for each_drive in drive:
             if os.path.exists(drive + each_drive):
@@ -186,6 +220,9 @@ def get_all_files_mac(fil):
                                 filesize = sizeConvert(os.stat(filepath).st_size)
                                 filetime = time.strftime('%Y-%m-%d %H:%M:%S',
                                                          time.localtime(os.stat(filepath).st_ctime))
+                                filenum += 1
+                                progress.current_file = filenum
+                                progress()
                                 if filename.lower() == fil.lower():
                                     found_file = True
                                     logging.info('File found at path: {}'.format(filepath))
@@ -208,6 +245,8 @@ def get_all_files_win(fil):
     logging.debug('-fil: This will take a while please wait.')
     drive = string.ascii_uppercase
     if fil == 'all':
+        progress = ProgressBar()
+        filenum = 0
         for each_drive in drive:
             if os.path.exists(each_drive + ":\\"):
                 dir = each_drive + ":\\"
@@ -221,6 +260,9 @@ def get_all_files_win(fil):
                                 filesize = sizeConvert(os.stat(filepath).st_size)
                                 filetime = time.strftime('%Y-%m-%d %H:%M:%S',
                                                          time.localtime(os.stat(filepath).st_ctime))
+                                filenum += 1
+                                progress.current_file = filenum
+                                progress()
                                 logging.info(
                                     'filename: {:30}, filetype: {:7} filesize: {:10}, time stamp: {}'.format(filename,
                                                                                                              filetype,
@@ -232,6 +274,8 @@ def get_all_files_win(fil):
                     logging.critical('Cannot access {} .Probably a permissions error {}'.format(dir, ose))
 
     else:
+        progress = ProgressBar()
+        filenum = 0
         found_file = False
         for each_drive in drive:
             if os.path.exists(each_drive + ":\\"):
@@ -246,6 +290,9 @@ def get_all_files_win(fil):
                                 filesize = sizeConvert(os.stat(filepath).st_size)
                                 filetime = time.strftime('%Y-%m-%d %H:%M:%S',
                                                          time.localtime(os.stat(filepath).st_ctime))
+                                filenum += 1
+                                progress.current_file = filenum
+                                progress()
                                 if filename.lower() == fil.lower():
                                     found_file = True
                                     logging.info('File found at path: {}'.format(filepath))
@@ -274,6 +321,8 @@ def everything_mac(typ):  # working
     logging.info('-typ: This will take a while please wait.')
     drive = "/Volumes/Macintosh HD/Users"
     type_dicts = {}
+    progress = ProgressBar()
+    filenum = 0
     for each_drive in drive:
         if os.path.exists(drive + each_drive):
             path = drive + each_drive
@@ -283,6 +332,9 @@ def everything_mac(typ):  # working
                         filepath = os.path.join(root, file)
                         type = os.path.splitext(file)[-1].lower()
                         size = os.stat(filepath).st_size
+                        filenum += 1
+                        progress.current_file = filenum
+                        progress()
                         if type in type_dicts.keys():
                             type_dicts[type]['file_count'] += 1
                             type_dicts[type]['total_size'] = type_dicts[type]['total_size'] + size
@@ -317,6 +369,8 @@ def everything_win(typ):
     logging.info('-typ: This will take a while please wait.')
     drive = string.ascii_uppercase
     type_dicts = {}
+    progress = ProgressBar()
+    filenum = 0
     for each_drive in drive:
         if os.path.exists(each_drive + ":\\"):
             path = each_drive + ":\\"
@@ -326,6 +380,9 @@ def everything_win(typ):
                         filepath = os.path.join(root, file)
                         type = os.path.splitext(file)[-1].lower()
                         size = os.stat(filepath).st_size
+                        filenum += 1
+                        progress.current_file = filenum
+                        progress()
                         if type in type_dicts.keys():
                             type_dicts[type]['file_count'] += 1
                             type_dicts[type]['total_size'] = type_dicts[type]['total_size'] + size
